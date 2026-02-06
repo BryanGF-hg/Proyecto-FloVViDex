@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>FloMViDex – Maidcore Dex & Music</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ====== ESTILOS GENERALES ====== */
+        :root {
+            --bg-main: #0b0b19;
+            --bg-card: #16162a;
+            --accent: #ff9bd2;
+            --accent-soft: rgba(255, 155, 210, 0.25);
+            --accent-strong: #ff7ac4;
+            --text-primary: #f9f6ff;
+            --text-secondary: #c5c1e6;
+            --tag-bg: rgba(248, 244, 255, 0.1);
+            --border-soft: rgba(255, 255, 255, 0.12);
+            --shadow-soft: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #292550, #05040a);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ====== CABECERA / NAV ====== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(5, 4, 18, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .nav {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .logo-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            background: radial-gradient(circle at 30% 0%, #ffe3f6, #ff9bd257);
+            box-shadow: 0 0 18px rgba(255, 155, 210, 0.7);
+        }
+
+        .logo span {
+            font-size: 0.95rem;
+        }
+
+        /* ====== HERO ====== */
+        .hero {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem 1.25rem 2rem;
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2.3rem, 3vw, 3rem);
+            line-height: 1.1;
+            margin-bottom: 0.8rem;
+        }
+
+        .hero-text h1 span {
+            background: linear-gradient(120deg, #ffd6f1, #ff9bd2, #c1b3ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pill {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid var(--accent-soft);
+            background: rgba(22, 22, 42, 0.85);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .pill-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .hero-cta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .btn-primary {
+            border-radius: 999px;
+            padding: 0.6rem 1.4rem;
+            font-size: 0.9rem;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-strong), #ffc2ea);
+            color: #301231;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(255, 155, 210, 0.6);
+            transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.02);
+            box-shadow: 0 0 30px rgba(255, 155, 210, 0.9);
+        }
+
+        .btn-ghost {
+            border-radius: 999px;
+            padding: 0.55rem 1.3rem;
+            font-size: 0.9rem;
+            border: 1px dashed var(--accent-soft);
+            background: rgba(14, 14, 32, 0.8);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn-ghost:hover {
+            border-style: solid;
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(255, 155, 210, 0.04);
+        }
+
+        /* ====== HERO PANEL DERECHO ====== */
+        .hero-panel {
+            position: relative;
+            background: radial-gradient(circle at top left, #343268, #191726);
+            border-radius: 1.5rem;
+            padding: 1.1rem 1rem 1.2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+        }
+
+        .hero-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .browser-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            background: #ff9b9b;
+        }
+
+        .dot:nth-child(2) { background: #ffe7a3; }
+        .dot:nth-child(3) { background: #c1ffb5; }
+
+        .mini-tabs {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .mini-tab {
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+        }
+
+        .mini-tab.active {
+            border-color: var(--accent-soft);
+            color: var(--accent);
+            background: rgba(3, 3, 12, 0.8);
+        }
+
+        .hero-panel-main {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 0.9rem;
+            margin-top: 0.4rem;
+        }
+
+        /* Tarjeta artista / reproductor */
+        .artist-card {
+            background: rgba(11, 9, 27, 0.86);
+            border-radius: 1rem;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .artist-image {
+            position: relative;
+            width: 100%;
+            border-radius: 0.9rem;
+            height: 150px;
+            background: linear-gradient(145deg, #ffb6e2, #9475ff, #1c1335);
+            overflow: hidden;
+            margin-bottom: 0.6rem;
+        }
+
+        .artist-image::before,
+        .artist-image::after {
+            content: "";
+            position: absolute;
+            border-radius: 99px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            filter: blur(0.4px);
+        }
+
+        .artist-image::before {
+            width: 120%;
+            height: 40%;
+            top: -18%;
+            left: -10%;
+            transform: rotate(-10deg);
+            background: radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.8), transparent);
+        }
+
+        .artist-image::after {
+            width: 110%;
+            height: 35%;
+            bottom: -15%;
+            left: -5%;
+            transform: rotate(8deg);
+            background: radial-gradient(circle at 80% 100%, rgba(255, 178, 238, 0.6), transparent);
+        }
+
+        .floating-tag {
+            position: absolute;
+            right: 10px;
+            top: 15px;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(13, 7, 26, 0.85);
+            border: 1px solid rgba(255, 235, 255, 0.4);
+            font-size: 0.65rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            animation: floatTag 4s ease-in-out infinite;
+        }
+
+        .floating-tag span {
+            font-size: 0.7rem;
+        }
+
+        .tag-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: #ffeffa;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        }
+
+        @keyframes floatTag {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(-5px); opacity: 0.9; }
+        }
+
+        .artist-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .artist-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .artist-genre {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .audio-bar {
+            margin-top: 0.35rem;
+        }
+
+        .audio-bar label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .audio-bar progress {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            margin-top: 0.2rem;
+            -webkit-appearance: none;
+            appearance: none;
+            overflow: hidden;
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        progress::-webkit-progress-value {
+            background: linear-gradient(90deg, #ff9bd2, #c1b3ff);
+        }
+
+        /* Panel lateral con tags flotantes */
+        .dex-mini {
+            position: relative;
+            border-radius: 1rem;
+            background: radial-gradient(circle at top, rgba(255, 155, 210, 0.12), rgba(5, 3, 20, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.8rem 0.75rem;
+            overflow: hidden;
+        }
+
+        .dex-title {
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .dex-sub {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.7rem;
+        }
+
+        .dex-tags {
+            position: relative;
+            height: 120px;
+        }
+
+        .dex-tag {
+            position: absolute;
+            padding: 0.35rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(5, 6, 25, 0.95);
+            font-size: 0.65rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            animation: floatSoft 7s ease-in-out infinite;
+        }
+
+        .dex-tag img {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            object-fit: cover;
+            background: #222;
+        }
+
+        .dex-tag:nth-child(1) {
+            top: 8px;
+            left: 4px;
+            animation-delay: 0s;
+        }
+
+        .dex-tag:nth-child(2) {
+            top: 50px;
+            right: 6px;
+            animation-delay: 1.5s;
+        }
+
+        .dex-tag:nth-child(3) {
+            bottom: 0;
+            left: 24px;
+            animation-delay: 3s;
+        }
+
+        @keyframes floatSoft {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+
+        /* ====== SECCIÓN: ¿QUÉ ES FLOMVIDEX? ====== */
+        .section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem 1.25rem;
+        }
+
+        .section-title {
+            font-size: 1.45rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.1rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: rgba(11, 9, 27, 0.9);
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-soft);
+            font-size: 0.9rem;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 0.7rem;
+            line-height: 1.6;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+        }
+
+        .chip {
+            font-size: 0.72rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(255, 155, 210, 0.08);
+            border: 1px solid var(--accent-soft);
+            color: var(--accent);
+        }
+
+        /* ====== SECCIÓN: BLOQUES DE CONTENIDO DEL PROYECTO ====== */
+        .timeline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem;
+            font-size: 0.8rem;
+        }
+
+        .timeline-block {
+            background: rgba(6, 6, 24, 0.95);
+            border-radius: 0.9rem;
+            padding: 0.7rem 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-block::before {
+            content: attr(data-tag);
+            position: absolute;
+            top: 0.35rem;
+            right: 0.6rem;
+            font-size: 0.65rem;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-items {
+            list-style: none;
+            color: var(--text-secondary);
+        }
+
+        .timeline-items li {
+            margin-bottom: 0.1rem;
+        }
+
+        /* ====== FOOTER ====== */
+        footer {
+            margin-top: auto;
+            padding: 1.3rem 1.25rem 1.6rem;
+            border-top: 1px solid var(--border-soft);
+            background: rgba(3, 2, 12, 0.96);
+        }
+
+        .footer-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .footer-tag {
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(7, 5, 25, 0.9);
+        }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 860px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding-top: 1.8rem;
+            }
+            .hero-panel {
+                order: -1;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .timeline {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero {
+                padding-top: 1.2rem;
+            }
+            .hero-panel-main {
+                grid-template-columns: 1fr;
+            }
+            .hero-panel {
+                padding: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== HEADER / NAV ====== -->
+    <header>
+        <div class="nav">
+            <div class="logo">
+                <div class="logo-badge">Mx</div>
+                <span>FloMViDex · Maidcore Dex</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ====== HERO ====== -->
+    <main>
+        <section class="hero">
+            <!-- Columna texto -->
+            <div class="hero-text">
+                <h1>
+                    Bienvenid@ a <span>FloMViDex</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Una <strong>enciclopedia interactiva (Dex)</strong> + 
+                    <strong>reproductor musical</strong> que introduce a nuevos oyentes 
+                    al género <em>maidcore</em> usando música, etiquetas flotantes 
+                    y pequeñas animaciones en el navegador.
+                </p>
+
+                <div class="hero-badges">
+                    <div class="pill">
+                        <div class="pill-dot"></div>
+                        Maidcore · Música · Dex
+                    </div>
+                    <div class="pill">
+                        🎧 Reproductor sin instalar nada
+                    </div>
+                    <div class="pill">
+                        🫧 Etiquetas flotantes didácticas
+                    </div>
+                </div>
+
+                <div class="hero-cta">
+                    #contenido
+                        <button class="btn-primary">Ver estructura del proyecto</button>
+                    </a>
+                    #que-es
+                        <button class="btn-ghost">Cómo funciona FloMViDex</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Columna panel interactivo simulado -->
+            <div class="hero-panel">
+                <div class="hero-panel-header">
+                    <div class="browser-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="mini-tabs">
+                        <div class="mini-tab active">Maidcore Dex</div>
+                        <div class="mini-tab">Playlist</div>
+                        <div class="mini-tab">Artistas</div>
+                    </div>
+                </div>
+
+                <div class="hero-panel-main">
+                    <!-- Tarjeta Artista / Música -->
+                    <div class="artist-card">
+                        <div class="artist-image">
+                            <!-- Etiqueta flotante de artista -->
+                            <div class="floating-tag">
+                                <div class="tag-dot"></div>
+                                <span>Nuevo oyente</span>
+                            </div>
+                        </div>
+                        <div class="artist-meta">
+                            <div>
+                                <div class="artist-name">Maid Café Echo</div>
+                                <div class="artist-genre">Maidcore · Lo-fi · Cute</div>
+                            </div>
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">
+                                3:24
+                            </div>
+                        </div>
+                        <div class="audio-bar">
+                            <label>Reproducción (simulada)</label>
+                            <progress value="35" max="100"></progress>
+                        </div>
+                    </div>
+
+                    <!-- Panel con etiquetas flotantes tipo Dex -->
+                    <div class="dex-mini">
+                        <div class="dex-title">Etiquetas flotantes</div>
+                        <div class="dex-sub">
+                            Cada artista viene con una tarjeta visual, etiquetas 
+                            flotando con contexto y datos clave del género.
+                        </div>
+                        <div class="dex-tags">
+                            <div class="dex-tag">
+                                https://via.placeholder.com/18
+                                Maidcore 101
+                            </div>
+                            <div class="dex-tag">
+                                https://via.placeholder.com/18
+                                Artista · Lore
+                            </div>
+                            <div class="dex-tag">
+                                https://via.placeholder.com/18
+                                Playlist temática
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== SECCIÓN: QUÉ ES FLOMVIDEX ====== -->
+        <section class="section" id="que-es">
+            <h2 class="section-title">¿Qué es FloMViDex?</h2>
+            <p class="section-subtitle">
+                FloMViDex es una propuesta de aplicación web que combina un 
+                <strong>reproductor musical básico</strong> con un 
+                <strong>Dex interactivo de artistas y conceptos maidcore</strong>. 
+                Está pensada como herramienta de <strong>entrada educativa</strong> 
+                para un género musical todavía ambiguo y en expansión.
+            </p>
+
+            <div class="grid-2">
+                <article class="card">
+                    <h3>Objetivo principal</h3>
+                    <p>
+                        Facilitar que cualquier persona pueda descubrir maidcore 
+                        directamente desde su navegador, sin instalaciones y con:
+                    </p>
+                    <ul style="margin-left:1.1rem; color:var(--text-secondary); margin-bottom:0.6rem;">
+                        <li>Reproducción de pistas seleccionadas.</li>
+                        <li>Información contextual de artistas (Dex).</li>
+                        <li>Posibilidad de crear playlists simples.</li>
+                    </ul>
+                    <p>
+                        Todo acompañado de una estética <em>maidcore</em> suave, 
+                        con etiquetas flotantes y animaciones ligeras.
+                    </p>
+                    <div class="chip-row">
+                        <div class="chip">Aprendizaje + Entretenimiento</div>
+                        <div class="chip">UX sencilla</div>
+                        <div class="chip">Navegador web</div>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h3>Elementos clave del proyecto</h3>
+                    <p>
+                        El proyecto integra varios bloques que puedes documentar 
+                        y justificar en tu memoria:
+                    </p>
+                    <ul style="margin-left:1.1rem; color:var(--text-secondary);">
+                        <li>Búsqueda de información sobre el sector musical.</li>
+                        <li>Selección del servicio: plataforma introductoria maidcore.</li>
+                        <li>Propuesta de empresa <em>spin-off</em> ligada al producto.</li>
+                        <li>Relación con la unidad de empresa y flujo de información.</li>
+                    </ul>
+                    <div class="chip-row">
+                        <div class="chip">Investigación</div>
+                        <div class="chip">Spin-off</div>
+                        <div class="chip">Volumen de negocio</div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ====== SECCIÓN SPIN-OFF (CTA sencilla) ====== -->
+        <section class="section" id="spin-off">
+            <div class="card">
+                <h3>FloMViDex como spin-off</h3>
+                <p>
+                    En la parte de <strong>empresa spin-off</strong>, FloMViDex puede 
+                    plantearse como una startup enfocada en:
+                </p>
+                <ul style="margin-left:1.1rem; color:var(--text-secondary); margin-bottom:0.6rem;">
+                    <li>Curación de contenido maidcore y otros micro-géneros.</li>
+                    <li>Plataformas educativas para explicar subgéneros musicales.</li>
+                    <li>Colaboraciones con artistas independientes.</li>
+                </ul>
+                <p>
+                    Esta landing puede servir como <strong>maqueta visual</strong> 
+                    para presentar la idea delante de clase: 
+                    <em>qué es, a quién va dirigido y cómo se estructura</em>.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- ====== FOOTER ====== -->
+    <footer id="contacto">
+        <div class="footer-inner">
+            <div>
+                FloMViDex · Proyecto educativo sobre maidcore · 2026
+            </div>
+            <div class="footer-tags">
+                <span class="footer-tag">Maidcore</span>
+                <span class="footer-tag">Dex interactivo</span>
+                <span class="footer-tag">Reproductor web</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,954 @@
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>MaidCore Music | Música Otaku en la Comunidad Valenciana</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+          /* Reset y estilos base */
+          * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+          }
+
+          :root {
+              --primary: #ff4d8d;
+              --secondary: #9c4dff;
+              --dark: #1a1a2e;
+              --light: #f8f9fa;
+              --accent: #ffcc00;
+              --gray: #6c757d;
+              --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+              --gradient-reverse: linear-gradient(135deg, var(--secondary), var(--primary));
+          }
+
+          html {
+              scroll-behavior: smooth;
+          }
+
+          body {
+              font-family: 'Nunito', sans-serif;
+              line-height: 1.6;
+              color: #333;
+              background-color: var(--light);
+              overflow-x: hidden;
+          }
+
+          h1, h2, h3, h4, h5 {
+              font-family: 'Poppins', sans-serif;
+              font-weight: 700;
+              line-height: 1.2;
+          }
+
+          .container {
+              width: 100%;
+              max-width: 1200px;
+              margin: 0 auto;
+              padding: 0 20px;
+          }
+
+          section {
+              padding: 80px 0;
+          }
+
+          .btn {
+              display: inline-block;
+              padding: 14px 32px;
+              border-radius: 50px;
+              font-weight: 600;
+              text-decoration: none;
+              transition: all 0.3s ease;
+              border: none;
+              cursor: pointer;
+              font-size: 1rem;
+              text-align: center;
+          }
+
+          .btn-primary {
+              background: var(--gradient);
+              color: white;
+          }
+
+          .btn-primary:hover {
+              transform: translateY(-3px);
+              box-shadow: 0 10px 20px rgba(255, 77, 141, 0.3);
+          }
+
+          .btn-secondary {
+              background: transparent;
+              color: var(--primary);
+              border: 2px solid var(--primary);
+          }
+
+          .btn-secondary:hover {
+              background: var(--primary);
+              color: white;
+          }
+
+          .section-title {
+              text-align: center;
+              margin-bottom: 50px;
+          }
+
+          .section-title h2 {
+              font-size: 2.5rem;
+              background: var(--gradient);
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+              display: inline-block;
+              margin-bottom: 15px;
+          }
+
+          .section-title p {
+              color: var(--gray);
+              font-size: 1.1rem;
+              max-width: 600px;
+              margin: 0 auto;
+          }
+
+          /* Header y Navegación */
+          header {
+              background-color: rgba(26, 26, 46, 0.95);
+              position: fixed;
+              width: 100%;
+              top: 0;
+              z-index: 1000;
+              padding: 15px 0;
+              backdrop-filter: blur(10px);
+              box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+          }
+
+          .header-container {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+          }
+
+          .logo {
+              display: flex;
+              align-items: center;
+              color: white;
+              text-decoration: none;
+              font-weight: 800;
+              font-size: 1.8rem;
+          }
+
+          .logo span {
+              background: var(--gradient);
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+          }
+
+          .logo i {
+              margin-right: 10px;
+              color: var(--primary);
+          }
+
+          nav ul {
+              display: flex;
+              list-style: none;
+          }
+
+          nav ul li {
+              margin-left: 30px;
+          }
+
+          nav ul li a {
+              color: white;
+              text-decoration: none;
+              font-weight: 600;
+              transition: color 0.3s;
+              position: relative;
+          }
+
+          nav ul li a:hover {
+              color: var(--primary);
+          }
+
+          nav ul li a::after {
+              content: '';
+              position: absolute;
+              width: 0;
+              height: 2px;
+              background: var(--gradient);
+              bottom: -5px;
+              left: 0;
+              transition: width 0.3s;
+          }
+
+          nav ul li a:hover::after {
+              width: 100%;
+          }
+
+          .mobile-menu-btn {
+              display: none;
+              background: none;
+              border: none;
+              color: white;
+              font-size: 1.5rem;
+              cursor: pointer;
+          }
+
+          /* Hero Section */
+          .hero {
+              background: linear-gradient(rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.9)), url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+              background-size: cover;
+              background-position: center;
+              color: white;
+              padding: 180px 0 100px;
+              text-align: center;
+              position: relative;
+              overflow: hidden;
+          }
+
+          .hero::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: var(--gradient);
+              opacity: 0.1;
+              z-index: 0;
+          }
+
+          .hero-content {
+              position: relative;
+              z-index: 1;
+              max-width: 800px;
+              margin: 0 auto;
+          }
+
+          .hero h1 {
+              font-size: 3.5rem;
+              margin-bottom: 20px;
+              line-height: 1.1;
+          }
+
+          .hero h1 span {
+              background: var(--gradient);
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+          }
+
+          .hero p {
+              font-size: 1.2rem;
+              margin-bottom: 40px;
+              color: rgba(255, 255, 255, 0.9);
+              max-width: 600px;
+              margin-left: auto;
+              margin-right: auto;
+          }
+
+          .hero-btns {
+              display: flex;
+              justify-content: center;
+              gap: 20px;
+              flex-wrap: wrap;
+          }
+
+          /* Features Section */
+          .features {
+              background-color: white;
+          }
+
+          .features-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: 30px;
+          }
+
+          .feature-card {
+              background: white;
+              border-radius: 15px;
+              padding: 40px 30px;
+              text-align: center;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+              transition: transform 0.3s ease;
+          }
+
+          .feature-card:hover {
+              transform: translateY(-10px);
+          }
+
+          .feature-icon {
+              width: 80px;
+              height: 80px;
+              background: var(--gradient);
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 25px;
+              color: white;
+              font-size: 2rem;
+          }
+
+          .feature-card h3 {
+              font-size: 1.5rem;
+              margin-bottom: 15px;
+              color: var(--dark);
+          }
+
+          .feature-card p {
+              color: var(--gray);
+          }
+
+          /* Artists Section */
+          .artists {
+              background-color: #f8f9fa;
+          }
+
+          .artists-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+              gap: 30px;
+          }
+
+          .artist-card {
+              background: white;
+              border-radius: 15px;
+              overflow: hidden;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+              transition: transform 0.3s ease;
+          }
+
+          .artist-card:hover {
+              transform: translateY(-10px);
+          }
+
+          .artist-img {
+              height: 250px;
+              background: var(--gradient);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-size: 4rem;
+          }
+
+          .artist-info {
+              padding: 25px;
+              text-align: center;
+          }
+
+          .artist-info h3 {
+              font-size: 1.3rem;
+              margin-bottom: 10px;
+              color: var(--dark);
+          }
+
+          .artist-info p {
+              color: var(--primary);
+              font-weight: 600;
+              margin-bottom: 15px;
+          }
+
+          /* Events Section */
+          .events {
+              background: linear-gradient(rgba(26, 26, 46, 0.95), rgba(26, 26, 46, 0.95)), url('https://images.unsplash.com/photo-1492684223066-dd23140edf6d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+              background-size: cover;
+              background-position: center;
+              color: white;
+          }
+
+          .events .section-title h2 {
+              color: white;
+              background: none;
+          }
+
+          .events-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: 30px;
+          }
+
+          .event-card {
+              background: rgba(255, 255, 255, 0.1);
+              backdrop-filter: blur(10px);
+              border-radius: 15px;
+              overflow: hidden;
+              border: 1px solid rgba(255, 255, 255, 0.2);
+          }
+
+          .event-date {
+              background: var(--gradient);
+              color: white;
+              padding: 15px;
+              text-align: center;
+              font-weight: 700;
+              font-size: 1.2rem;
+          }
+
+          .event-info {
+              padding: 25px;
+          }
+
+          .event-info h3 {
+              font-size: 1.3rem;
+              margin-bottom: 10px;
+          }
+
+          .event-info p {
+              margin-bottom: 15px;
+              opacity: 0.9;
+          }
+
+          .event-location {
+              display: flex;
+              align-items: center;
+              color: var(--accent);
+              font-weight: 600;
+          }
+
+          .event-location i {
+              margin-right: 8px;
+          }
+
+          /* CTA Section */
+          .cta {
+              background: var(--gradient);
+              color: white;
+              text-align: center;
+              padding: 100px 0;
+          }
+
+          .cta h2 {
+              font-size: 2.8rem;
+              margin-bottom: 20px;
+          }
+
+          .cta p {
+              font-size: 1.2rem;
+              margin-bottom: 40px;
+              max-width: 700px;
+              margin-left: auto;
+              margin-right: auto;
+              opacity: 0.9;
+          }
+
+          .cta .btn {
+              background: white;
+              color: var(--primary);
+              font-weight: 700;
+              padding: 16px 40px;
+              font-size: 1.1rem;
+          }
+
+          .cta .btn:hover {
+              background: var(--dark);
+              color: white;
+          }
+
+          /* Footer */
+          footer {
+              background-color: var(--dark);
+              color: white;
+              padding: 70px 0 30px;
+          }
+
+          .footer-content {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+              gap: 40px;
+              margin-bottom: 50px;
+          }
+
+          .footer-column h3 {
+              font-size: 1.3rem;
+              margin-bottom: 25px;
+              position: relative;
+              padding-bottom: 10px;
+          }
+
+          .footer-column h3::after {
+              content: '';
+              position: absolute;
+              width: 50px;
+              height: 3px;
+              background: var(--gradient);
+              bottom: 0;
+              left: 0;
+          }
+
+          .footer-links {
+              list-style: none;
+          }
+
+          .footer-links li {
+              margin-bottom: 12px;
+          }
+
+          .footer-links a {
+              color: rgba(255, 255, 255, 0.7);
+              text-decoration: none;
+              transition: color 0.3s;
+          }
+
+          .footer-links a:hover {
+              color: var(--primary);
+          }
+
+          .social-links {
+              display: flex;
+              gap: 15px;
+              margin-top: 20px;
+          }
+
+          .social-links a {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 40px;
+              height: 40px;
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 50%;
+              color: white;
+              text-decoration: none;
+              transition: all 0.3s;
+          }
+
+          .social-links a:hover {
+              background: var(--gradient);
+              transform: translateY(-3px);
+          }
+
+          .footer-bottom {
+              text-align: center;
+              padding-top: 30px;
+              border-top: 1px solid rgba(255, 255, 255, 0.1);
+              color: rgba(255, 255, 255, 0.7);
+          }
+
+          /* Responsive */
+          @media (max-width: 992px) {
+              .hero h1 {
+                  font-size: 2.8rem;
+              }
+              
+              .section-title h2 {
+                  font-size: 2.2rem;
+              }
+          }
+
+          @media (max-width: 768px) {
+              .mobile-menu-btn {
+                  display: block;
+              }
+              
+              nav ul {
+                  position: fixed;
+                  top: 70px;
+                  left: 0;
+                  width: 100%;
+                  background: var(--dark);
+                  flex-direction: column;
+                  align-items: center;
+                  padding: 20px 0;
+                  transform: translateY(-100%);
+                  opacity: 0;
+                  transition: all 0.3s;
+                  z-index: 999;
+                  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+              }
+              
+              nav ul.active {
+                  transform: translateY(0);
+                  opacity: 1;
+              }
+              
+              nav ul li {
+                  margin: 15px 0;
+              }
+              
+              .hero {
+                  padding: 150px 0 80px;
+              }
+              
+              .hero h1 {
+                  font-size: 2.3rem;
+              }
+              
+              .hero-btns {
+                  flex-direction: column;
+                  align-items: center;
+              }
+              
+              .hero-btns .btn {
+                  width: 100%;
+                  max-width: 300px;
+              }
+              
+              section {
+                  padding: 60px 0;
+              }
+              
+              .cta h2 {
+                  font-size: 2.2rem;
+              }
+          }
+
+          @media (max-width: 480px) {
+              .hero h1 {
+                  font-size: 2rem;
+              }
+              
+              .section-title h2 {
+                  font-size: 1.8rem;
+              }
+              
+              .price {
+                  font-size: 2.5rem;
+              }
+          }
+      </style>
+  </head>
+  <body>
+      <!-- Header y Navegación -->
+      <header>
+          <div class="container header-container">
+              <a href="#" class="logo">
+                  <i class="fas fa-headphones-alt"></i> Maid<span>Core</span>
+              </a>
+              
+              <button class="mobile-menu-btn" id="mobileMenuBtn">
+                  <i class="fas fa-bars"></i>
+              </button>
+              
+              <nav>
+                  <ul id="mainMenu">
+                      <li><a href="#home">Inicio</a></li>
+                      <li><a href="#features">Características</a></li>
+                      <li><a href="#artists">Artistas</a></li>
+                      <li><a href="#pricing">Planes</a></li>
+                      <li><a href="#events">Eventos</a></li>
+                      <li><a href="#contact">Contacto</a></li>
+                      <li><a href="#" class="btn btn-primary">App Web</a></li>
+                  </ul>
+              </nav>
+          </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="hero" id="home">
+          <div class="container hero-content">
+              <h1>La primera plataforma de <span>música MaidCore</span> en Valencia</h1>
+              <p>Descubre artistas exclusivos, vive eventos únicos y únete a la comunidad otaku-musical más vibrante de la Comunidad Valenciana.</p>
+              <div class="hero-btns">
+                  <a href="#pricing" class="btn btn-primary">Comenzar gratis</a>
+                  <a href="#features" class="btn btn-secondary">Descubrir más</a>
+              </div>
+          </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features" id="features">
+          <div class="container">
+              <div class="section-title">
+                  <h2>Características Exclusivas</h2>
+                  <p>Todo lo que necesitas para disfrutar del mejor maidcore en un solo lugar</p>
+              </div>
+              
+              <div class="features-grid">
+                  <div class="feature-card">
+                      <div class="feature-icon">
+                          <i class="fas fa-music"></i>
+                      </div>
+                      <h3>Catálogo Exclusivo</h3>
+                      <p>Accede a cientos de artistas maidcore, j-pop y k-pop independientes que no encontrarás en otras plataformas.</p>
+                  </div>
+                  
+                  <div class="feature-card">
+                      <div class="feature-icon">
+                          <i class="fas fa-calendar-alt"></i>
+                      </div>
+                      <h3>Eventos Presenciales</h3>
+                      <p>Conciertos, meet & greets y festivales exclusivos en Valencia y toda la Comunidad Valenciana.</p>
+                  </div>
+                  
+                  <div class="feature-card">
+                      <div class="feature-icon">
+                          <i class="fas fa-users"></i>
+                      </div>
+                      <h3>Comunidad Activa</h3>
+                      <p>Conéctate con otros fans, comparte playlists y participa en retos y concursos exclusivos.</p>
+                  </div>
+                  
+                  <div class="feature-card">
+                      <div class="feature-icon">
+                          <i class="fas fa-gift"></i>
+                      </div>
+                      <h3>Merchandising Oficial</h3>
+                      <p>Compra ediciones limitadas de camisetas, vinilos y coleccionables de tus artistas favoritos.</p>
+                  </div>
+                  
+                  <div class="feature-card">
+                      <div class="feature-icon">
+                          <i class="fas fa-broadcast-tower"></i>
+                      </div>
+                      <h3>Radio 24/7</h3>
+                      <p>Escucha nuestra emisora de radio maidcore con DJs especializados y programas temáticos.</p>
+                  </div>
+                  
+                  <div class="feature-card">
+                      <div class="feature-icon">
+                          <i class="fas fa-mobile-alt"></i>
+                      </div>
+                      <h3>App Multiplataforma</h3>
+                      <p>Disfruta de tu música en cualquier dispositivo: web, iOS, Android y tablets.</p>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Artists Section -->
+      <section class="artists" id="artists">
+          <div class="container">
+              <div class="section-title">
+                  <h2>Artistas Destacados</h2>
+                  <p>Descubre a los creadores que están definiendo el sonido maidcore en España</p>
+              </div>
+              
+              <div class="artists-grid">
+                  <div class="artist-card">
+                      <div class="artist-img">
+                          <i class="fas fa-user-ninja"></i>
+                      </div>
+                      <div class="artist-info">
+                          <h3>Sakura Electronica</h3>
+                          <p>Future Bass / J-Pop</p>
+                          <p>Valencia, España</p>
+                      </div>
+                  </div>
+                  
+                  <div class="artist-card">
+                      <div class="artist-img">
+                          <i class="fas fa-user-astronaut"></i>
+                      </div>
+                      <div class="artist-info">
+                          <h3>Kawaii Circuit</h3>
+                          <p>Synthpop / Electropop</p>
+                          <p>Alicante, España</p>
+                      </div>
+                  </div>
+                  
+                  <div class="artist-card">
+                      <div class="artist-img">
+                          <i class="fas fa-user-secret"></i>
+                      </div>
+                      <div class="artist-info">
+                          <h3>Maid² (Maid al cuadrado)</h3>
+                          <p>Hyperpop / Digital Hardcore</p>
+                          <p>Castellón, España</p>
+                      </div>
+                  </div>
+                  
+                  <div class="artist-card">
+                      <div class="artist-img">
+                          <i class="fas fa-user-tie"></i>
+                      </div>
+                      <div class="artist-info">
+                          <h3>Tokyo Wave</h3>
+                          <p>City Pop / Future Funk</p>
+                          <p>Valencia, España</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Events Section -->
+      <section class="events" id="events">
+          <div class="container">
+              <div class="section-title">
+                  <h2>Próximos Eventos</h2>
+                  <p>Vive la experiencia maidcore en directo en la Comunidad Valenciana</p>
+              </div>
+              
+              <div class="events-grid">
+                  <div class="event-card">
+                      <div class="event-date">15 JUNIO 2023</div>
+                      <div class="event-info">
+                          <h3>MaidCore Night Valencia</h3>
+                          <p>Primer evento oficial de lanzamiento con artistas locales e invitados especiales.</p>
+                          <div class="event-location">
+                              <i class="fas fa-map-marker-alt"></i> L'Oceanogràfic, Valencia
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <div class="event-card">
+                      <div class="event-date">29 JULIO 2023</div>
+                      <div class="event-info">
+                          <h3>Anime Sound Festival</h3>
+                          <p>Festival de música anime y maidcore con food trucks y zona de merchandising.</p>
+                          <div class="event-location">
+                              <i class="fas fa-map-marker-alt"></i> Plaza del Ayuntamiento, Alicante
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <div class="event-card">
+                      <div class="event-date">12 AGOSTO 2023</div>
+                      <div class="event-info">
+                          <h3>Maid Cafe Experience</h3>
+                          <p>Concierto acústico en ambiente íntimo de café temático con artistas exclusivos.</p>
+                          <div class="event-location">
+                              <i class="fas fa-map-marker-alt"></i> Barrio del Carmen, Valencia
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="cta" id="contact">
+          <div class="container">
+              <h2>¿Listo para unirte a la revolución maidcore?</h2>
+              <p>Descarga la app hoy mismo y obtén 30 días gratis de MaidCore Premium. Únete a miles de fans en la Comunidad Valenciana que ya están descubriendo la próxima ola de música otaku.</p>
+              <a href="#" class="btn">Descargar App - 30 días gratis</a>
+          </div>
+      </section>
+
+      <!-- Footer -->
+      <footer>
+          <div class="container">
+              <div class="footer-content">
+                  <div class="footer-column">
+                      <h3>MaidCore Music</h3>
+                      <p>La plataforma líder de música maidcore en la Comunidad Valenciana. Conectamos artistas con fans a través de streaming, eventos y comunidad.</p>
+                      <div class="social-links">
+                          <a href="#"><i class="fab fa-twitter"></i></a>
+                          <a href="#"><i class="fab fa-instagram"></i></a>
+                          <a href="#"><i class="fab fa-youtube"></i></a>
+                          <a href="#"><i class="fab fa-discord"></i></a>
+                          <a href="#"><i class="fab fa-tiktok"></i></a>
+                      </div>
+                  </div>
+                  
+                  <div class="footer-column">
+                      <h3>Enlaces Rápidos</h3>
+                      <ul class="footer-links">
+                          <li><a href="#home">Inicio</a></li>
+                          <li><a href="#features">Características</a></li>
+                          <li><a href="#artists">Artistas</a></li>
+                          <li><a href="#pricing">Precios</a></li>
+                          <li><a href="#events">Eventos</a></li>
+                      </ul>
+                  </div>
+                  
+                  <div class="footer-column">
+                      <h3>Legal</h3>
+                      <ul class="footer-links">
+                          <li><a href="#">Términos y condiciones</a></li>
+                          <li><a href="#">Política de privacidad</a></li>
+                          <li><a href="#">Cookies</a></li>
+                          <li><a href="#">Aviso legal</a></li>
+                      </ul>
+                  </div>
+                  
+                  <div class="footer-column">
+                      <h3>Contacto</h3>
+                      <ul class="footer-links">
+                          <li><i class="fas fa-map-marker-alt"></i> Valencia, España</li>
+                          <li><i class="fas fa-envelope"></i> hola@maidcore.es</li>
+                          <li><i class="fas fa-phone"></i> +34 963 123 456</li>
+                          <li><i class="fas fa-clock"></i> L-V: 9:00-18:00</li>
+                      </ul>
+                  </div>
+              </div>
+              
+              <div class="footer-bottom">
+                  <p>&copy; 2023 MaidCore Music. Todos los derechos reservados. Comunidad Valenciana, España.</p>
+              </div>
+          </div>
+      </footer>
+
+<script>
+    // Menú móvil - SIMPLIFICADO
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mainMenu = document.getElementById('mainMenu');
+    
+    menuBtn.addEventListener('click', function() {
+        mainMenu.classList.toggle('active');
+        this.innerHTML = mainMenu.classList.contains('active') 
+            ? '<i class="fas fa-times"></i>' 
+            : '<i class="fas fa-bars"></i>';
+    });
+    
+    // Cerrar menú al hacer clic en enlace
+    document.querySelectorAll('#mainMenu a').forEach(link => {
+        link.addEventListener('click', function() {
+            mainMenu.classList.remove('active');
+            menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+        });
+    });
+    
+    // Scroll suave para enlaces internos
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                const offsetTop = targetElement.offsetTop - 80;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Efecto de aparición al hacer scroll
+    const animatedElements = document.querySelectorAll('.feature-card, .artist-card, .pricing-card, .event-card');
+    
+    // Función para mostrar elementos
+    function showOnScroll() {
+        animatedElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight - 100;
+            
+            if (isVisible) {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }
+        });
+    }
+    
+    // Inicializar estilos
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.5s, transform 0.5s';
+    });
+    
+    // Escuchar scroll
+    window.addEventListener('scroll', showOnScroll);
+    
+    // Mostrar elementos visibles al cargar
+    window.addEventListener('load', showOnScroll);
+    
+    // Formulario simple (si añades uno)
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('¡Gracias por tu mensaje! Te contactaremos pronto.');
+            this.reset();
+        });
+    });
+</script>

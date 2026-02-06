@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FloMViDex · Maidcore Dex & Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+/* ========== PALETA Y BASE ========== */
+:root { --bg:#0b0b19; --bg-soft:#161629; --card:#1f1f36; --accent:#ff9bd2; --accent-soft:#ffcee9; --text-main:#fdf8ff; --text-muted:#c7c3e6; --border-soft:rgba(255,255,255,.12); }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:radial-gradient(circle at top,#2d2650,#05030b); color:var(--text-main); min-height:100vh; }
+a { color:inherit; text-decoration:none; }
+
+/* ========== CONTENEDOR GENERAL ========== */
+.page { max-width:1024px; margin:0 auto; padding:1.5rem 1rem 2.5rem; }
+
+/* ========== HEADER ========== */
+header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; }
+.logo { display:flex; align-items:center; gap:.6rem; }
+.logo-badge { width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); display:flex; justify-content:center; align-items:center; background:radial-gradient(circle at 30% 0,#ffe3f6,#ff9bd257); box-shadow:0 0 12px rgba(255,155,210,.7); }
+.logo-title { font-weight:500; }
+header ul { list-style:none; display:flex; gap:.8rem; }
+header a { padding:.25rem .7rem; border-radius:999px; border:1px solid transparent; color:var(--text-muted); transition:.2s ease; }
+header a:hover { border-color:var(--accent); color:var(--accent); background:rgba(255,155,210,.06); }
+
+/* ========== HERO ========== */
+main { display:block; }
+section { margin-bottom:2rem; }
+.hero { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:1.5rem; align-items:center; margin-bottom:2.2rem; }
+.hero-title { margin-bottom:.6rem; line-height:1.1; }
+.hero-title span { background:linear-gradient(120deg,#ffd6f1,#ff9bd2,#c7b8ff); -webkit-background-clip:text; color:transparent; }
+.hero-text { color:var(--text-muted); line-height:1.6; margin-bottom:1rem; }
+.pill-row { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1.1rem; }
+.pill { padding:.25rem .6rem; border-radius:999px; border:1px solid rgba(255,155,210,.4); background:rgba(17,15,35,.9); }
+.hero-buttons { display:flex; flex-wrap:wrap; gap:.6rem; }
+.btn-main { border:none; border-radius:999px; padding:.55rem 1.2rem; background:linear-gradient(135deg,var(--accent),var(--accent-soft)); color:#2d1230; font-weight:600; cursor:pointer; box-shadow:0 0 18px rgba(255,155,210,.7); transition:.15s; }
+.btn-main:hover { transform:translateY(-1px); box-shadow:0 0 24px rgba(255,155,210,.9); }
+.btn-ghost { border-radius:999px; padding:.5rem 1.1rem; border:1px solid rgba(255,255,255,.18); background:rgba(11,11,28,.9); color:var(--text-muted); transition:.2s; }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ========== PLAYER ========== */
+.player-card { background:radial-gradient(circle at top left,#343268,#191726); border-radius:1.1rem; padding:1rem; border:1px solid var(--border-soft); box-shadow:0 0 22px rgba(0,0,0,.6); }
+.player-body { background:rgba(8,6,24,.9); border-radius:.9rem; padding:.8rem; border:1px solid rgba(255,255,255,.08); }
+.track-tag { display:inline-flex; align-items:center; gap:.3rem; padding:.25rem .6rem; border-radius:999px; background:rgba(255,155,210,.1); border:1px solid rgba(255,155,210,.5); margin-bottom:.5rem; }
+.track-tag-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); }
+.track-title { font-weight:600; }
+audio { width:100%; }
+
+/* ========== SECCIONES GENERALES ========== */
+.section-inner { background:var(--bg-soft); border-radius:.9rem; padding:.9rem 1rem; border:1px solid var(--border-soft); }
+.section-title { margin-bottom:.4rem; }
+.section-sub { color:var(--text-muted); margin-bottom:.9rem; }
+.section-list { margin-left:1.2rem; color:var(--text-muted); }
+.mini-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:.8rem; }
+.mini-block { background:#1a1a30; border-radius:.7rem; padding:.6rem .7rem; border:1px solid rgba(255,255,255,.08); }
+.mini-block strong { display:block; margin-bottom:.2rem; }
+.tag { display:inline-block; margin-top:.2rem; padding:.15rem .5rem; border-radius:999px; border:1px solid rgba(255,255,255,.15); color:var(--accent-soft); }
+
+/* ========== FOOTER ========== */
+footer { border-top:1px solid var(--border-soft); padding-top:1rem; color:var(--text-muted); text-align:center; }
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:720px){  header { flex-direction:column; align-items:flex-start; gap:.6rem; }  header ul { flex-wrap:wrap; }  .hero { grid-template-columns:1fr; }   }
+@media(max-width:480px){  .page { padding-inline:.8rem; }  header ul { gap:.4rem; }  header a { padding-inline:.5rem; }   }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ========== HEADER ========== -->
+  <header>
+    <div class="logo">
+      <div class="logo-badge">Mx</div>
+      <div class="logo-title">FloMViDex · Maidcore Dex</div>
+    </div>
+      <ul>
+        <li><a href="#hero">Inicio</a></li>
+        <li><a href="#que-es">Qué es</a></li>
+        <li><a href="#contenido">Contenido</a></li>
+        <li><a href="#spin-off">Spin-off</a></li>
+      </ul>
+  </header>
+
+  <main>
+    <!-- ========== HERO ========== -->
+    <section id="hero" class="hero">
+      <!-- Texto principal -->
+      <div>
+        <h1 class="hero-title">Descubre <span>Maidcore</span> con FloMViDex</h1>
+        <p class="hero-text">
+          FloMViDex es una <strong>aplicación web</strong> que mezcla un
+          <strong>reproductor musical básico</strong> con un
+          <strong>Dex de artistas y conceptos maidcore</strong>, pensada como
+          puerta de entrada educativa a este género musical todavía ambiguo.
+        </p>
+        <div class="pill-row">
+          <span class="pill">🎧 Reproductor en el navegador</span>
+          <span class="pill">📚 Dex de artistas</span>
+          <span class="pill"> ☕︎ྀི Estética maidcore suave</span>
+        </div>
+        <div class="hero-buttons">
+          <a href="#contenido"><button class="btn-main">Ver estructura del proyecto</button></a>
+          <a href="#que-es"><button class="btn-ghost">Cómo funciona FloMViDex</button></a>
+        </div>
+      </div>
+
+      <!-- Reproductor simple -->
+      <div class="player-card">
+        <div class="player-body">
+          <div class="track-tag">
+            <span class="track-tag-dot"></span>
+            Pista de ejemplo para FloMViDex
+          </div>
+          <div class="track-title">Wonderland  by Ozoi The Maid x Yakui The Maid (all rights reserved)</div>
+          <audio controls>
+            <!-- Sustituir esto por la ruta real del archivo -->
+            <source src="mp3/Ozoi The Maid x Yakui The Maid – Wonderland.mp3" type="audio/mpeg">
+            Tu navegador no soporta el elemento de audio.
+          </audio>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SECCIÓN: QUÉ ES FLOMVIDEX ========== -->
+    <section id="que-es">
+      <div class="section-inner">
+        <h2 class="section-title">¿Qué es FloMViDex?</h2>
+        <p class="section-sub">
+          Es una propuesta de aplicación web que introduce a nuevos oyentes al
+          género <strong>maidcore</strong> combinando música, etiquetas,
+          información y una interfaz sencilla. No es solo un reproductor:
+          también actúa como herramienta educativa de entrada.
+        </p>
+        <ul class="section-list">
+          <li>Reproducir pistas maidcore directamente en el navegador.</li>
+          <li>Consultar información básica de artistas y conceptos.</li>
+          <li>Empezar a crear una pequeña playlist con diferentes estilos.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ========== SECCIÓN: CONTENIDO DEL PROYECTO ========== -->
+    <section id="contenido">
+      <div class="section-inner">
+        <h2 class="section-title">Contenido del proyecto (resumen)</h2>
+        <p class="section-sub">
+          La landing resume los bloques principales que se desarrollan en la
+          documentación del proyecto: desde la búsqueda de información hasta
+          la transmisión de resultados.
+        </p>
+
+        <div class="mini-grid">
+          <div class="mini-block">
+            <strong>001 · Búsqueda de información</strong>
+            <span>
+            <div class="tag">Investigación inicial</div>            
+              Identificar empresas representativas (2026-01-30), estructura y departamentos,
+              volumen de negocio y recursos del sector musical / digital.
+            </span>
+          </div>
+
+          <div class="mini-block">
+            <strong>002 · Selección de servicio / producto</strong>
+            <span>
+            <div class="tag">Definición del proyecto</div>            
+              FloMViDex como plataforma básica para descubrir maidcore:
+              necesidades detectadas, posibles soluciones (2026-01-30), aspectos innovadores
+              y viabilidad técnica.
+            </span>
+          </div>
+
+          <div class="mini-block">
+            <strong>003 · Propuesta de empresa spin-off</strong>
+            <span>
+            <div class="tag">Enfoque emprendedor</div>
+              Temporalización de actividades, recursos y logística, permisos,
+              riesgos (PRL), imprevistos y documentación necesaria.
+            </span>
+          </div>
+
+          <div class="mini-block">
+            <strong>004 · Relación con la unidad de empresa</strong>
+            <span>
+             <div class="tag">Gestión y calidad</div>
+              Procedimientos de seguimiento, verificación de la calidad de
+              resultados, identificación y documentación de desviaciones.
+            </span>
+          </div>
+
+          <div class="mini-block">
+            <strong>005 · Transmisión de información</strong>
+            <span>
+            <div class="tag">Comunicación</div>
+              Actitud ordenada y metódica, comunicación horizontal y vertical,
+              uso de medios informáticos y terminología técnica del sector.
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SECCIÓN SPIN-OFF ========== -->
+    <section id="spin-off">
+      <div class="section-inner">
+        <h2 class="section-title">FloMViDex como spin-off</h2>
+        <p class="section-sub">
+          FloMViDex podría evolucionar como enseñanza de como hacer una plataforma especializada en
+          educación musical sobre subgéneros emergentes y nichos como el maidcore. Algunas actividades que se pueden hacer son:
+        </p>
+        <ul class="section-list">
+          <li>Curación y explicación de micro-géneros musicales.</li>
+          <li>Herramientas web educativas para centros formativos.</li>
+          <li>Colaboraciones con artistas independientes y sellos pequeños.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    FloMViDex 2026, Proyecto Intermodular del Tercer Trimestre
+  </footer>
+</div>
+</body>
+</html>
