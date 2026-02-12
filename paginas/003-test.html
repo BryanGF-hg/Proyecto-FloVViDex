@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaidCore Player - Windows XP Style</title>
+    <style>
+      * {margin: 0; padding: 0; box-sizing: border-box; font-family: "Tahoma","Arial",sans-serif; font-size: 11px;}
+      body {background-color: #008080; background-image: url('https://raw.githubusercontent.com/BryanGF-hg/Proyecto-FloVViDex/refs/heads/main/Images/wallpaper/wallpaper-v0-ww00n61..._imresizer.png'); height: 100vh; overflow: hidden;}
+
+      .window {width: 550px; height: 450px; background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 4px 4px 10px rgba(0,0,0,0.5);}
+      .window-title {padding-left: 5px;}
+      .window-content {padding: 10px; height: calc(100% - 28px); overflow: auto;}
+      .window-controls {display: flex;}
+      .title-bar {background: linear-gradient(90deg,#000080,#1084d0); color: white; padding: 4px; height: 28px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; font-size: 12px;}
+
+      .control-btn {width: 20px; height: 20px; margin-left: 2px; background-color: #c0c0c0; border: 1px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; cursor: pointer;}
+      .control-btn:active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
+
+      .player {background-color: #c0c0c0; border: 2px inset; padding: 15px; margin-bottom: 15px; height: 150px;}
+      .player-display {background-color: black; color: #00ff00; padding: 10px; margin-bottom: 15px; font-family: "Courier New", monospace; font-size: 12px; overflow: hidden; border: 1px inset;}
+      .player-controls {display: flex; justify-content: center; gap: 8px; margin-bottom: 15px;}
+      .player-btn {width: 100px; height: 25px; background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; cursor: pointer; font-size: 10px; font-weight: bold;}
+      .player-btn:active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
+
+      .playlist {background-color: white; border: 2px inset; height: 150px; overflow-y: auto; margin-top: 100px; padding: 5px;}
+      .playlist-item {padding: 3px 5px; cursor: pointer; border-bottom: 1px dotted #c0c0c0;}
+      .playlist-item:hover {background-color: #000080; color: white;}
+      .playlist-item.active {background-color: #000080; color: white; font-weight: bold;}
+
+      .taskbar {position: fixed; bottom: 0; left: 0; width: 100%; height: 40px; background-color: #c0c0c0; border-top: 2px solid #fff; display: flex; align-items: center; padding: 0 5px;}
+      .taskbar-items {display: flex; gap: 5px; flex-grow: 1;}
+      .taskbar-item {background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; padding: 5px 10px; min-width: 120px; cursor: pointer; font-size: 10px;}
+      .taskbar-item.active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
+
+      .start-btn {width: 80px; height: 30px; background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; display: flex; align-items: center; padding: 0 8px; font-weight: bold; font-size: 12px; cursor: pointer; margin-right: 10px;}
+      .start-btn:active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
+      .start-icon {background-color: #008080; color: white; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; margin-right: 5px; font-weight: bold;}
+
+      .clock {background-color: #c0c0c0; border: 2px inset; padding: 5px 10px; font-size: 11px; min-width: 100px; text-align: center; margin-left: 10px;}
+
+      ::-webkit-scrollbar {width: 16px;}
+      ::-webkit-scrollbar-track {background-color: #c0c0c0; border: 1px inset;}
+      ::-webkit-scrollbar-thumb {background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080;}
+      ::-webkit-scrollbar-button {background-color: #c0c0c0; border: 1px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; height: 16px;}
+
+      .text-center {text-align: center;}
+      .bold {font-weight: bold;}
+      .blue {color: #000080;}
+    </style>
+</head>
+<body>
+    <!-- VENTANA PRINCIPAL -->
+    <div class="window">
+        <div class="title-bar">
+            <div class="window-title">MaidCore Player v1.0</div>
+            <div class="window-controls">
+                <div class="control-btn">_</div>
+                <div class="control-btn">□</div>
+                <div class="control-btn">X</div>
+            </div>
+        </div>
+        
+        <div class="window-content">
+            <!-- REPRODUCTOR -->
+            <div class="player">
+                <div class="player-display" id="display">
+                    MaidCore Player - Ready<br>
+                    -----------------------<br>
+                    Now Playing: [Stopped]<br>
+                    Time: 00:00 / 00:00
+                </div>
+                
+                <div class="player-controls">
+                    <button class="player-btn" onclick="playSong()">▶ Play</button>
+                    <button class="player-btn" onclick="pauseSong()">⏸ Pause</button>
+                    <button class="player-btn" onclick="stopSong()">⏹ Stop</button>
+                    <button class="player-btn" onclick="nextSong()">⏭ Next</button>
+                    <button class="player-btn" onclick="prevSong()">⏮ Prev</button>
+                </div>
+                
+                <div class="playlist" id="playlist">
+                    <div style="font-weight: bold; margin-bottom: 5px;">Playlist:</div>                
+                    <div class="playlist-item active" onclick="selectSong(0)">01. Sakura Electronica - Cherry Blossom Dreams</div>
+                    <div class="playlist-item" onclick="selectSong(1)">02. Kawaii Circuit - Digital Heartbeat</div>
+                    <div class="playlist-item" onclick="selectSong(2)">03. Maid² - Binary Love</div>
+                    <div class="playlist-item" onclick="selectSong(3)">04. Tokyo Wave - Neon Streets</div>
+                    <div class="playlist-item" onclick="selectSong(4)">05. Valencia Otaku Ensemble - Mediterranean Maid</div>
+                </div>
+            </div>
+
+            <!-- (Se eliminó el panel de estadísticas) -->
+
+            <div class="text-center mt-10">
+                <button class="player-btn" onclick="launchApp()">🎵 Launch MaidCore App</button>
+                <button class="player-btn" onclick="showEvents()">📅 View Events</button>
+                <button class="player-btn" onclick="visitStore()">🛒 Merch Store</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BARRA DE TAREAS (TASKBAR) -->
+    <div class="taskbar">
+        <div class="start-btn" onclick="toggleStartMenu()">
+            <div class="start-icon">M</div>
+            Start
+        </div>
+        
+        <div class="taskbar-items">
+            <div class="taskbar-item active" onclick="focusWindow()">MaidCore Player</div>
+            <div class="taskbar-item" onclick="openExplorer()">🗀 Song of the Week</div>
+            <div class="taskbar-item" onclick="openBrowser()"><> Paint</div>
+        </div>
+        
+        <div class="clock" id="clock">14:25:37</div>
+    </div>
+
+    <script>
+        // Variables del reproductor
+        let currentSong = 0;
+        let isPlaying = false;
+        let songs = [
+            { title: "Sakura Electronica - Cherry Blossom Dreams", duration: "3:45" },
+            { title: "Kawaii Circuit - Digital Heartbeat", duration: "4:12" },
+            { title: "Maid² - Binary Love", duration: "3:28" },
+            { title: "Tokyo Wave - Neon Streets", duration: "5:01" },
+            { title: "Valencia Otaku Ensemble - Mediterranean Maid", duration: "4:33" }
+        ];
+
+        // Funciones del reproductor
+        function selectSong(index) {
+            currentSong = index;
+            updatePlaylist();
+            updateDisplay();
+        }
+
+        function playSong() {
+            isPlaying = true;
+            document.getElementById('display').innerHTML = 
+                `MaidCore Player - Playing<br>-----------------------<br>Now Playing: ${songs[currentSong].title}<br>Time: 00:00 / ${songs[currentSong].duration}`;
+        }
+
+        function pauseSong() {
+            isPlaying = false;
+            document.getElementById('display').innerHTML = 
+                `MaidCore Player - Paused<br>-----------------------<br>Now Playing: ${songs[currentSong].title}<br>Time: 02:15 / ${songs[currentSong].duration}`;
+        }
+
+        function stopSong() {
+            isPlaying = false;
+            updateDisplay();
+        }
+
+        function nextSong() {
+            currentSong = (currentSong + 1) % songs.length;
+            updatePlaylist();
+            updateDisplay();
+        }
+
+        function prevSong() {
+            currentSong = (currentSong - 1 + songs.length) % songs.length;
+            updatePlaylist();
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const status = isPlaying ? "Playing" : "Stopped";
+            const time = "00:00";
+            document.getElementById('display').innerHTML = 
+                `MaidCore Player - ${status}<br>-----------------------<br>Now Playing: ${songs[currentSong].title}<br>Time: ${time} / ${songs[currentSong].duration}`;
+        }
+
+        function updatePlaylist() {
+            const items = document.querySelectorAll('.playlist-item');
+            items.forEach((item, index) => {
+                if (index === currentSong) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+        }
+
+        // Funciones de la interfaz
+        function launchApp() {
+            alert('Launching MaidCore App v1.0...\n\nFeatures:\n• MaidCore Music Player\n• Local Artists Database\n• Event Calendar\n• Community Chat\n• Merchandise Store');
+        }
+
+        function showEvents() {
+            alert('📅 Upcoming MaidCore Events in Valencia:\n\n1. June 15 - MaidCore Night @ Oceanogràfic\n2. July 29 - Anime Sound Festival @ Alicante\n3. Aug 12 - Maid Cafe Experience @ Carmen\n\nTickets available in-app!');
+        }
+
+        function visitStore() {
+            alert('🛒 Opening MaidCore Merch Store...\n\nAvailable items:\n• Limited Edition T-Shirts: 25€\n• MaidCore Vinyls: 30€\n• Otaku Pins Set: 15€\n• Valencia Edition Hoodie: 45€');
+        }
+
+        function toggleStartMenu() {
+            alert('[Start Menu]\n\nPrograms:\n• MaidCore Player\n• MaidCore Explorer\n• MaidCore Browser\n\nDocuments\n• Settings\n• Help\n• About\n\nShut Down...');
+        }
+
+        function focusWindow() {
+            document.querySelector('.window').style.zIndex = '1000';
+        }
+
+        function openExplorer() {
+            alert('Opening MaidCore Explorer...\n\nLocal Files:\nC:\\MaidCore\\\n│── Artists\\\n│── Music\\\n│── Events\\\n│── Merch\\\n│── Community\\');
+        }
+
+        function openBrowser() {
+            alert('Opening MaidCore Browser...\n\nConnecting to: http://maidcore-valencia.es\n\nFeatured:\n• Artist Profiles\n• Event Tickets\n• Community Forum\n• Online Store');
+        }
+
+        // Reloj en tiempo real
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('es-ES', { hour12: false });
+            document.getElementById('clock').textContent = time;
+        }
+
+        // Inicialización
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Efecto de arrastre para la ventana (simplificado)
+        let isDragging = false;
+        let offsetX, offsetY;
+        const windowEl = document.querySelector('.window');
+        const titleBar = document.querySelector('.title-bar');
+
+        titleBar.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+
+        function startDrag(e) {
+            isDragging = true;
+            offsetX = e.clientX - windowEl.offsetLeft;
+            offsetY = e.clientY - windowEl.offsetTop;
+            windowEl.style.cursor = 'move';
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            windowEl.style.left = (e.clientX - offsetX) + 'px';
+            windowEl.style.top = (e.clientY - offsetY) + 'px';
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            windowEl.style.cursor = 'default';
+        }
+
+        // Control de botones de ventana
+        document.querySelectorAll('.control-btn').forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                if (index === 0) { // Minimizar
+                    windowEl.style.display = 'none';
+                    document.querySelector('.taskbar-item').textContent = 'MaidCore Player [Minimized]';
+                } else if (index === 1) { // Maximizar/Restaurar
+                    if (windowEl.style.width === '100%') {
+                        windowEl.style.width = '700px';
+                        windowEl.style.height = '500px';
+                        windowEl.style.top = '50%';
+                        windowEl.style.left = '50%';
+                        windowEl.style.transform = 'translate(-50%, -50%)';
+                    } else {
+                        windowEl.style.width = '100%';
+                        windowEl.style.height = 'calc(100vh - 40px)';
+                        windowEl.style.top = '0';
+                        windowEl.style.left = '0';
+                        windowEl.style.transform = 'none';
+                    }
+                } else if (index === 2) { // Cerrar
+                    if (confirm('Close MaidCore Player?')) {
+                        windowEl.style.display = 'none';
+                        document.querySelector('.taskbar-item').textContent = 'MaidCore Player [Closed]';
+                        document.querySelector('.taskbar-item').classList.remove('active');
+                    }
+                }
+            });
+        });
+
+        // Restaurar ventana desde taskbar
+        document.querySelector('.taskbar-item').addEventListener('click', function() {
+            windowEl.style.display = 'block';
+            this.textContent = 'MaidCore Player';
+            this.classList.add('active');
+        });
+    </script>
+</body>
+</html>

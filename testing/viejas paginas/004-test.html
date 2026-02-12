@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloMViDex - Maidcore Player</title>
+    <style>
+/* RESET */
+* {margin: 0;padding: 0;box-sizing: border-box;font-family: Tahoma, Arial, sans-serif;font-size: 11px;}
+body {background-color: #008080;background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z4AE/jMQBxiJ00ZeK0aNQO4FRvK8Tp5O4mIw6gXiDEBuCwCw7QZTYZUwuAAAAABJRU5ErkJggg==');height: 100vh;overflow: hidden;}
+
+/* VENTANA PRINCIPAL */
+.window {width: 880px;height: 520px;background-color: #c0c0c0;border: 2px solid;border-top-color: #ffffff;border-left-color: #ffffff;border-right-color: #808080;border-bottom-color: #808080;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);}
+.title-bar {background: linear-gradient(90deg, #000080, #1084d0);color: white;padding: 4px;height: 28px;display: flex;align-items: center;justify-content: space-between;font-weight: bold;font-size: 12px;}
+.window-title {padding-left: 5px;}
+.window-controls {display: flex;}
+.control-btn {width: 20px;height: 20px;margin-left: 2px;background-color: #c0c0c0;border: 1px solid;border-top-color: #ffffff;border-left-color: #ffffff;border-right-color: #808080;border-bottom-color: #808080;display: flex;align-items: center;justify-content: center;font-weight: bold;font-size: 10px;cursor: pointer;}
+.control-btn:active {border-top-color: #808080;border-left-color: #808080;border-right-color: #ffffff;border-bottom-color: #ffffff;}
+.window-content {height: calc(100% - 28px);padding: 8px;}
+.layout {display: grid;grid-template-columns: 2fr 1.4fr;gap: 8px;height: 100%;}
+
+/* PANEL IZQUIERDO: PLAYER */
+.player-panel {background-color: #c0c0c0;border: 2px inset;padding: 8px;display: flex;flex-direction: column;height: 100%;}
+.player-display {background-color: black;color: #00ff00;border: 1px inset;padding: 6px;height: 70px;font-family: "Courier New", monospace;font-size: 12px;margin-bottom: 6px;}
+.player-controls {display: flex;justify-content: center;gap: 6px;margin-bottom: 6px;}
+.btn-xp {background-color: #c0c0c0;border: 2px solid;border-top-color: #ffffff;border-left-color: #ffffff;border-right-color: #808080;border-bottom-color: #808080;cursor: pointer;font-weight: bold;font-size: 10px;padding: 4px 8px;height: 26px;}
+.btn-xp:active {border-top-color: #808080;border-left-color: #808080;border-right-color: #ffffff;border-bottom-color: #ffffff;}
+.btn-main {min-width: 70px;}
+.progress-wrapper {background-color: #808080;border: 2px inset;height: 16px;margin-bottom: 4px;position: relative;}
+.progress-fill {background: linear-gradient(90deg, #00cc00, #00ff88);height: 100%;width: 0%;}
+.time-info {display: flex;justify-content: space-between;font-size: 10px;margin-bottom: 4px;}
+.playlist-title {font-weight: bold;margin: 4px 0 2px;}
+.playlist {background-color: white;border: 2px inset;flex-grow: 1;overflow-y: auto;padding: 4px;}
+.playlist-item {padding: 3px 4px;border-bottom: 1px dotted #c0c0c0;cursor: pointer;}
+.playlist-item:hover {background-color: #000080;color: white;}
+.playlist-item.active {background-color: #000080;color: white;font-weight: bold;}
+
+/* PANEL DERECHO: DEX + ENTRENAMIENTO + STATS */
+.right-panel {display: grid;grid-template-rows: auto auto 1fr;gap: 6px;height: 100%;}
+.dex-panel {background-color: #c0c0c0;border: 2px inset;padding: 6px;}
+.dex-header {font-weight: bold;margin-bottom: 4px;}
+.artist-card {background-color: white;border: 1px inset;padding: 6px;display: grid;grid-template-columns: 80px 1fr;gap: 6px;}
+.artist-image {width: 80px;height: 80px;background-color: #000080;border: 2px solid #c0c0c0;background-size: cover;background-position: center;}
+.artist-name {font-weight: bold;color: #000080;margin-bottom: 2px;}
+.artist-description {font-size: 10px;}
+.tags-container {position: relative;margin-top: 4px;height: 50px;overflow: hidden;}
+.tag {position: absolute;padding: 1px 6px;background-color: #ffe4ff;border: 1px solid #ffb6ff;border-radius: 8px;font-size: 9px;white-space: nowrap;animation: floatTag 6s linear infinite;}
+@keyframes floatTag {0% {transform: translateY(20px);opacity: 0;}10% {opacity: 1;}90% {opacity: 1;}100% {transform: translateY(-40px);opacity: 0;}}
+.learning-panel {background-color: #c0c0c0;border: 2px inset;padding: 6px;}
+.learning-header {font-weight: bold;margin-bottom: 3px;}
+.learning-steps {display: flex;gap: 4px;margin-bottom: 4px;}
+.step-btn {flex: 1;font-size: 10px;}
+.learning-text {background-color: white;border: 1px inset;padding: 4px;height: 70px;font-size: 10px;overflow-y: auto;}
+.learning-progress-wrapper {margin-top: 4px;background-color: #808080;border: 2px inset;height: 10px;position: relative;}
+.learning-progress-fill {background: linear-gradient(90deg, #000080, #1084d0);height: 100%;width: 0%;}
+.learning-footer {margin-top: 3px;font-size: 9px;text-align: center;}
+.stats-panel {background-color: #c0c0c0;border: 2px inset;padding: 6px;display: flex;flex-direction: column;gap: 4px;}
+.stats-header {font-weight: bold;}
+.stats-grid {display: grid;grid-template-columns: repeat(2, 1fr);gap: 4px;}
+.stat-box {background-color: white;border: 1px inset;padding: 4px;text-align: center;}
+.stat-value {font-weight: bold;font-size: 13px;color: #000080;margin-top: 2px;}
+.actions {display: flex;justify-content: center;gap: 4px;margin-top: 4px;}
+
+/* TASKBAR XP */
+.taskbar {position: fixed;bottom: 0;left: 0;width: 100%;height: 40px;background-color: #c0c0c0;border-top: 2px solid #ffffff;display: flex;align-items: center;padding: 0 5px;}
+.start-btn {width: 80px;height: 30px;background-color: #c0c0c0;border: 2px solid;border-top-color: #ffffff;border-left-color: #ffffff;border-right-color: #808080;border-bottom-color: #808080;display: flex;align-items: center;padding: 0 8px;font-weight: bold;font-size: 12px;cursor: pointer;margin-right: 10px;}
+.start-btn:active {border-top-color: #808080;border-left-color: #808080;border-right-color: #ffffff;border-bottom-color: #ffffff;}
+.start-icon {background-color: #008080;color: white;width: 16px;height: 16px;display: flex;align-items: center;justify-content: center;margin-right: 5px;font-weight: bold;}
+.taskbar-items {display: flex;gap: 5px;flex-grow: 1;}
+.taskbar-item {background-color: #c0c0c0;border: 2px solid;border-top-color: #ffffff;border-left-color: #ffffff;border-right-color: #808080;border-bottom-color: #808080;padding: 5px 10px;min-width: 130px;cursor: pointer;font-size: 10px;}
+.taskbar-item.active {border-top-color: #808080;border-left-color: #808080;border-right-color: #ffffff;border-bottom-color: #ffffff;}
+.clock {background-color: #c0c0c0;border: 2px inset;padding: 5px 10px;font-size: 11px;min-width: 90px;text-align: center;margin-left: 10px;}
+
+/* SCROLLBAR XP */
+::-webkit-scrollbar {width: 14px;}
+::-webkit-scrollbar-track {background-color: #c0c0c0;border: 1px inset;}
+::-webkit-scrollbar-thumb {background-color: #c0c0c0;border: 2px solid;border-top-color: #ffffff;border-left-color: #ffffff;border-right-color: #808080;border-bottom-color: #808080;}
+::-webkit-scrollbar-button {background-color: #c0c0c0;border: 1px solid;border-top-color: #ffffff;border-left-color: #ffffff;border-right-color: #808080;border-bottom-color: #808080;height: 16px;}    
+    </style>
+</head>
+<body>
+    <!-- VENTANA PRINCIPAL -->
+    <div class="window" id="mainWindow">
+        <div class="title-bar" id="titleBar">
+            <div class="window-title">FloMViDex - Maidcore Player XP</div>
+            <div class="window-controls">
+                <div class="control-btn" data-action="min">_</div>
+                <div class="control-btn" data-action="max">□</div>
+                <div class="control-btn" data-action="close">X</div>
+            </div>
+        </div>
+
+        <div class="window-content">
+            <div class="layout">
+                <!-- IZQUIERDA: PLAYER -->
+                <div class="player-panel">
+                    <div class="player-display" id="display">
+                        FloMViDex Maidcore Player - Ready<br>
+                        --------------------------------<br>
+                        Now Playing: [Ninguna pista]<br>
+                        Time: 00:00 / 00:00
+                    </div>
+
+                    <div class="player-controls">
+                        <button class="btn-xp btn-main" id="playPauseBtn">▶ Play</button>
+                        <button class="btn-xp btn-main" id="stopBtn">⏹ Stop</button>
+                        <button class="btn-xp btn-main" id="prevBtn">⏮ Prev</button>
+                        <button class="btn-xp btn-main" id="nextBtn">⏭ Next</button>
+                    </div>
+
+                    <div class="progress-wrapper">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                    <div class="time-info">
+                        <span id="currentTime">00:00</span>
+                        <span id="totalTime">00:00</span>
+                    </div>
+
+                    <div class="playlist-title">Playlist - Introducción a Maidcore (FloMViDex Demo)</div>
+                    <div class="playlist" id="playlist"></div>
+                </div>
+
+                <!-- DERECHA: DEX + ENTRENAMIENTO + STATS -->
+                <div class="right-panel">
+                    <!-- DEX -->
+                    <div class="dex-panel">
+                        <div class="dex-header">📖 MaidDex del Artista</div>
+                        <div class="artist-card">
+                            <div class="artist-image" id="artistImage"></div>
+                            <div>
+                                <div class="artist-name" id="artistName">Selecciona una pista…</div>
+                                <div class="artist-description" id="artistDescription">
+                                    El MaidDex te enseñará quién está detrás de cada canción, de dónde viene, y qué hace que suene “Maidcore”.
+                                </div>
+                                <div class="tags-container" id="tagsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ENTRENAMIENTO / MISIÓN -->
+                    <div class="learning-panel">
+                        <div class="learning-header">🎓 Misión Maidcore (Modo Entrenamiento)</div>
+                        <div class="learning-steps">
+                            <button class="btn-xp step-btn" data-step="1">Paso 1</button>
+                            <button class="btn-xp step-btn" data-step="2">Paso 2</button>
+                            <button class="btn-xp step-btn" data-step="3">Paso 3</button>
+                        </div>
+                        <div class="learning-text" id="learningText">
+                            Usa los pasos para entender el género Maidcore:<br><br>
+                            1. Escucha algunas pistas.<br>
+                            2. Lee el MaidDex de los artistas.<br>
+                            3. Relaciona etiquetas, estética y sonido.
+                        </div>
+                        <div class="learning-progress-wrapper">
+                            <div class="learning-progress-fill" id="learningProgress"></div>
+                        </div>
+                        <div class="learning-footer">
+                            Progreso de aprendizaje Maidcore: <span id="learningPercent">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- STATS -->
+                    <div class="stats-panel">
+                        <div class="stats-header">📊 Comunidad Maidcore - C. Valenciana</div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                Usuarios Activos
+                                <div class="stat-value" id="usersStat">2,543</div>
+                            </div>
+                            <div class="stat-box">
+                                Canciones Maidcore
+                                <div class="stat-value" id="songsStat">427</div>
+                            </div>
+                            <div class="stat-box">
+                                Eventos 2025
+                                <div class="stat-value" id="eventsStat">12</div>
+                            </div>
+                            <div class="stat-box">
+                                Artistas Locales
+                                <div class="stat-value" id="artistsStat">28</div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-xp" id="eventsBtn">📅 Eventos</button>
+                            <button class="btn-xp" id="storeBtn">🛒 Merch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TASKBAR -->
+    <div class="taskbar">
+        <div class="start-btn" id="startBtn">
+            <div class="start-icon">M</div>
+            Start
+        </div>
+
+        <div class="taskbar-items">
+            <div class="taskbar-item active" id="taskMain">FloMViDex - Maidcore Player</div>
+            <div class="taskbar-item" id="taskExplorer">🗀 Explorer</div>
+            <div class="taskbar-item" id="taskBrowser">🌐 Internet</div>
+        </div>
+
+        <div class="clock" id="clock">00:00:00</div>
+    </div>
+
+    <!-- AUDIO (opcional: puedes poner URLs reales) -->
+    <audio id="audioElement"></audio>
+
+    <script>
+        // --- DATOS ---
+        const songs = [
+            {
+                title: "Sakura Electronica - Cherry Blossom Dreams",
+                artist: "Sakura Electronica",
+                duration: 225, // 3:45
+                description: "Texturas suaves, arpegios brillantes y una estética de flor de cerezo que representa el lado más chill del Maidcore.",
+                tags: ["Chill", "Sakura", "Lo-fi", "Maidcore"],
+                img: "https://via.placeholder.com/80x80/ffb6c1/000000?text=SE",
+                audioUrl: "" // Puedes poner aquí tu MP3 real
+            },
+            {
+                title: "Kawaii Circuit - Digital Heartbeat",
+                artist: "Kawaii Circuit",
+                duration: 252, // 4:12
+                description: "Beats rápidos, sonidos tipo chiptune y voces procesadas: enfocado en la idea de un 'latido digital' kawaii.",
+                tags: ["Upbeat", "Chiptune", "Idol", "Maidcore"],
+                img: "https://via.placeholder.com/80x80/ffd700/000000?text=KC",
+                audioUrl: ""
+            },
+            {
+                title: "Maid² - Binary Love",
+                artist: "Maid²",
+                duration: 208, // 3:28
+                description: "Explora el amor entre humanos y AIs, mezclando synthpop con estética de maid café futurista.",
+                tags: ["Synthpop", "AI", "Love Story", "Maidcore"],
+                img: "https://via.placeholder.com/80x80/87cefa/000000?text=M2",
+                audioUrl: ""
+            },
+            {
+                title: "Tokyo Wave - Neon Streets",
+                artist: "Tokyo Wave",
+                duration: 301, // 5:01
+                description: "Vaporwave + city pop con un toque de noche en Akihabara y cafés maid iluminados por neones.",
+                tags: ["Vaporwave", "City Pop", "Neon", "Maidcore"],
+                img: "https://via.placeholder.com/80x80/ba55d3/000000?text=TW",
+                audioUrl: ""
+            },
+            {
+                title: "Valencia Otaku Ensemble - Mediterranean Maid",
+                artist: "Valencia Otaku Ensemble",
+                duration: 273, // 4:33
+                description: "Combina ritmos mediterráneos con armonías anime, acercando el Maidcore a la costa valenciana.",
+                tags: ["Mediterráneo", "Local", "Fusion", "Maidcore"],
+                img: "https://via.placeholder.com/80x80/3cb371/ffffff?text=VOE",
+                audioUrl: ""
+            }
+        ];
+
+        const learningSteps = {
+            1: "Paso 1 - Escucha:\n\nReproduce al menos dos canciones diferentes y presta atención a:\n• El tipo de ritmo.\n• El uso de sonidos electrónicos.\n• El tono (cute, melancólico, energético...).",
+            2: "Paso 2 - Observa el MaidDex:\n\nFíjate en la ficha del artista:\n• ¿De dónde procede el proyecto?\n• ¿Qué etiquetas flotantes aparecen?\n• ¿Se repite 'Maidcore' junto a otros géneros?",
+            3: "Paso 3 - Conecta concepto y sonido:\n\nIntenta explicar con tus palabras:\n• Qué tienen en común estas canciones.\n• Qué las diferencia de otros géneros.\n• Por qué podrían encajar dentro de 'Maidcore'."
+        };
+
+        // --- ESTADO ---
+        let currentSongIndex = 0;
+        let isPlaying = false;
+        let progressInterval = null;
+        let learningCompleted = {
+            1: false,
+            2: false,
+            3: false
+        };
+
+        // --- ELEMENTOS DOM ---
+        const displayEl = document.getElementById("display");
+        const playlistEl = document.getElementById("playlist");
+        const artistImageEl = document.getElementById("artistImage");
+        const artistNameEl = document.getElementById("artistName");
+        const artistDescEl = document.getElementById("artistDescription");
+        const tagsContainerEl = document.getElementById("tagsContainer");
+        const progressBarEl = document.getElementById("progressBar");
+        const currentTimeEl = document.getElementById("currentTime");
+        const totalTimeEl = document.getElementById("totalTime");
+        const audioEl = document.getElementById("audioElement");
+
+        const playPauseBtn = document.getElementById("playPauseBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+
+        const learningTextEl = document.getElementById("learningText");
+        const learningProgressEl = document.getElementById("learningProgress");
+        const learningPercentEl = document.getElementById("learningPercent");
+        const stepButtons = document.querySelectorAll(".step-btn");
+
+        const usersStatEl = document.getElementById("usersStat");
+        const songsStatEl = document.getElementById("songsStat");
+        const eventsStatEl = document.getElementById("eventsStat");
+        const artistsStatEl = document.getElementById("artistsStat");
+
+        const startBtn = document.getElementById("startBtn");
+        const taskMain = document.getElementById("taskMain");
+        const taskExplorer = document.getElementById("taskExplorer");
+        const taskBrowser = document.getElementById("taskBrowser");
+        const clockEl = document.getElementById("clock");
+
+        const mainWindow = document.getElementById("mainWindow");
+        const titleBar = document.getElementById("titleBar");
+
+        const eventsBtn = document.getElementById("eventsBtn");
+        const storeBtn = document.getElementById("storeBtn");
+
+        // --- UTILIDADES ---
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+        }
+
+        function updateDisplay() {
+            const song = songs[currentSongIndex];
+            const status = isPlaying ? "Playing" : "Stopped";
+            const current = isPlaying ? formatTime(audioEl.currentTime || 0) : "00:00";
+            const total = formatTime(song.duration);
+
+            displayEl.innerHTML =
+                `FloMViDex Maidcore Player - ${status}<br>` +
+                `--------------------------------<br>` +
+                `Now Playing: ${song.title}<br>` +
+                `Time: ${current} / ${total}`;
+
+            currentTimeEl.textContent = current;
+            totalTimeEl.textContent = total;
+        }
+
+        function buildPlaylist() {
+            playlistEl.innerHTML = "";
+            songs.forEach((song, i) => {
+                const div = document.createElement("div");
+                div.className = "playlist-item" + (i === currentSongIndex ? " active" : "");
+                div.textContent = `${String(i+1).padStart(2, "0")}. ${song.title}`;
+                div.addEventListener("click", () => {
+                    selectSong(i);
+                    playSong();
+                });
+                playlistEl.appendChild(div);
+            });
+        }
+
+        function updatePlaylistActive() {
+            const items = playlistEl.querySelectorAll(".playlist-item");
+            items.forEach((item, idx) => {
+                item.classList.toggle("active", idx === currentSongIndex);
+            });
+        }
+
+        function updateDex() {
+            const song = songs[currentSongIndex];
+            artistImageEl.style.backgroundImage = `url('${song.img}')`;
+            artistNameEl.textContent = song.artist;
+            artistDescEl.textContent = song.description;
+
+            tagsContainerEl.innerHTML = "";
+            song.tags.forEach((tag, index) => {
+                const span = document.createElement("span");
+                span.className = "tag";
+                span.textContent = tag;
+                span.style.left = (5 + index * 18) + "%";
+                span.style.animationDelay = (index * 0.8) + "s";
+                tagsContainerEl.appendChild(span);
+            });
+        }
+
+        function selectSong(index) {
+            currentSongIndex = index;
+            audioEl.src = songs[index].audioUrl || "";
+            audioEl.currentTime = 0;
+            progressBarEl.style.width = "0%";
+            progressBarEl.dataset.simTime = "0";
+            updatePlaylistActive();
+            updateDex();
+            updateDisplay();
+        }
+
+        function playSong() {
+            isPlaying = true;
+            playPauseBtn.textContent = "⏸ Pause";
+
+            if (audioEl.src) {
+                audioEl.play().catch(() => {});
+            }
+
+            clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                const song = songs[currentSongIndex];
+
+                if (audioEl.src) {
+                    const current = audioEl.currentTime || 0;
+                    const ratio = current / song.duration;
+                    progressBarEl.style.width = (ratio * 100) + "%";
+                    currentTimeEl.textContent = formatTime(current);
+
+                    if (current >= song.duration - 0.5) {
+                        clearInterval(progressInterval);
+                        nextSong();
+                    }
+                } else {
+                    // Simulación si no hay audio real
+                    let sim = parseFloat(progressBarEl.dataset.simTime || "0");
+                    sim += 1;
+                    if (sim >= song.duration) {
+                        sim = song.duration;
+                        clearInterval(progressInterval);
+                        nextSong();
+                        return;
+                    }
+                    progressBarEl.dataset.simTime = sim;
+                    const ratio = sim / song.duration;
+                    progressBarEl.style.width = (ratio * 100) + "%";
+                    currentTimeEl.textContent = formatTime(sim);
+                }
+                updateDisplay();
+            }, 1000);
+
+            updateDisplay();
+        }
+
+        function pauseSong() {
+            isPlaying = false;
+            playPauseBtn.textContent = "▶ Play";
+            if (audioEl.src) {
+                audioEl.pause();
+            }
+            clearInterval(progressInterval);
+            updateDisplay();
+        }
+
+        function stopSong() {
+            isPlaying = false;
+            playPauseBtn.textContent = "▶ Play";
+            if (audioEl.src) {
+                audioEl.pause();
+                audioEl.currentTime = 0;
+            }
+            clearInterval(progressInterval);
+            progressBarEl.style.width = "0%";
+            progressBarEl.dataset.simTime = "0";
+            currentTimeEl.textContent = "00:00";
+            updateDisplay();
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            selectSong(currentSongIndex);
+            playSong();
+        }
+
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            selectSong(currentSongIndex);
+            playSong();
+        }
+
+        // --- ENTRENAMIENTO ---
+        function markStep(step) {
+            learningCompleted[step] = true;
+            learningTextEl.textContent = learningSteps[step];
+
+            // actualizar estilo de botones
+            stepButtons.forEach(btn => {
+                const s = btn.dataset.step;
+                if (learningCompleted[s]) {
+                    btn.style.backgroundColor = "#a0ffa0";
+                }
+            });
+
+            // calcular progreso
+            const done = Object.values(learningCompleted).filter(v => v).length;
+            const percent = Math.round((done / 3) * 100);
+            learningProgressEl.style.width = percent + "%";
+            learningPercentEl.textContent = percent + "%";
+        }
+
+        // --- STATS RANDOM ---
+        function updateStats() {
+            const users = 2543 + Math.floor(Math.random() * 50);
+            const songsCount = 427 + Math.floor(Math.random() * 10);
+            const events = 12 + Math.floor(Math.random() * 3);
+            const artists = 28 + Math.floor(Math.random() * 5);
+
+            usersStatEl.textContent = users.toLocaleString();
+            songsStatEl.textContent = songsCount;
+            eventsStatEl.textContent = events;
+            artistsStatEl.textContent = artists;
+        }
+
+        // --- RELOJ ---
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString("es-ES", { hour12: false });
+            clockEl.textContent = time;
+        }
+
+        // --- VENTANA PRINCIPAL DRAG + CONTROLES ---
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        titleBar.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            offsetX = e.clientX - mainWindow.offsetLeft;
+            offsetY = e.clientY - mainWindow.offsetTop;
+            mainWindow.style.cursor = "move";
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            mainWindow.style.left = (e.clientX - offsetX) + "px";
+            mainWindow.style.top = (e.clientY - offsetY) + "px";
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+            mainWindow.style.cursor = "default";
+        });
+
+        document.querySelectorAll(".control-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const action = btn.dataset.action;
+                if (action === "min") {
+                    mainWindow.style.display = "none";
+                    taskMain.textContent = "FloMViDex [Minimized]";
+                } else if (action === "max") {
+                    if (mainWindow.style.width === "100%") {
+                        mainWindow.style.width = "880px";
+                        mainWindow.style.height = "520px";
+                        mainWindow.style.top = "50%";
+                        mainWindow.style.left = "50%";
+                        mainWindow.style.transform = "translate(-50%, -50%)";
+                    } else {
+                        mainWindow.style.width = "100%";
+                        mainWindow.style.height = "calc(100vh - 40px)";
+                        mainWindow.style.top = "0";
+                        mainWindow.style.left = "0";
+                        mainWindow.style.transform = "none";
+                    }
+                } else if (action === "close") {
+                    if (confirm("Close FloMViDex Maidcore Player?")) {
+                        mainWindow.style.display = "none";
+                        taskMain.textContent = "FloMViDex [Closed]";
+                        taskMain.classList.remove("active");
+                    }
+                }
+            });
+        });
+
+        taskMain.addEventListener("click", () => {
+            mainWindow.style.display = "block";
+            taskMain.textContent = "FloMViDex - Maidcore Player";
+            taskMain.classList.add("active");
+        });
+
+        taskExplorer.addEventListener("click", () => {
+            alert("Opening MaidCore Explorer...\n\nC:\\FloMViDex\\\n│── Artists\\\n│── Music\\\n│── Events\\\n│── Merch\\\n│── Community\\");
+        });
+
+        taskBrowser.addEventListener("click", () => {
+            alert("Opening MaidCore Browser...\n\nConnecting to: http://maidcore-valencia.es\n\n• Artist Profiles\n• Event Tickets\n• Community Forum\n• Online Store");
+        });
+
+        startBtn.addEventListener("click", () => {
+            alert("[Start Menu]\n\nPrograms:\n• FloMViDex Player\n• MaidCore Explorer\n• MaidCore Browser\n\nDocuments\n• Settings\n• Help\n• About\n\nShut Down...");
+        });
+
+        // Botones entrenamiento
+        stepButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const step = btn.dataset.step;
+                markStep(step);
+            });
+        });
+
+        // Eventos y merch
+        eventsBtn.addEventListener("click", () => {
+            alert("📅 Eventos Maidcore (demo):\n\n1. Maidcore Night @ Oceanogràfic\n2. Anime Sound Fest @ Alicante\n3. Maid Café Experience @ El Carmen\n4. FloMViDex Live Demo @ Campus Valencia");
+        });
+
+        storeBtn.addEventListener("click", () => {
+            alert("🛒 Maidcore Merch (demo):\n\n• Camiseta Limited Edition: 25€\n• Neon Vinyl Maidcore: 30€\n• Pack Pins Otaku (x6): 15€\n• Sudadera Valencia Edition: 45€");
+        });
+
+        // Player controles
+        playPauseBtn.addEventListener("click", () => {
+            if (isPlaying) {
+                pauseSong();
+            } else {
+                playSong();
+            }
+        });
+        stopBtn.addEventListener("click", stopSong);
+        prevBtn.addEventListener("click", prevSong);
+        nextBtn.addEventListener("click", nextSong);
+
+        // Teclas rápidas
+        document.addEventListener("keydown", (e) => {
+            if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (isPlaying) pauseSong(); else playSong();
+            } else if (e.code === "ArrowRight") {
+                nextSong();
+            } else if (e.code === "ArrowLeft") {
+                prevSong();
+            }
+        });
+
+        // Reloj + stats
+        setInterval(updateClock, 1000);
+        setInterval(updateStats, 5000);
+        updateClock();
+        updateStats();
+
+        // Inicialización
+        buildPlaylist();
+        selectSong(0);
+    </script>
+</body>
+</html>
