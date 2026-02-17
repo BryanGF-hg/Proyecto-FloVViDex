@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    header { display: flex; margin-bottom: 20px;}
+    .divider{margin: 10px;}
+    .tab { padding: 8px 12px; margin:15px;margin-inline:0px;border: 1px solid #ccc; cursor: pointer; height:30px;}
+    .tab.active { background: #007bff; color: #fff; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
+    th { background: #f5f5f5; }
+    .actions button { margin-right: 5px; }
+    form { width:300px;margin-top: 20px; gap: 10px; align-items: center; }
+  </style>
+</head>
+<body>
+  <header>
+   <div class="divider">
+    <h1>Admin Dashboard para FloMVIDex</h1>
+    <div id="current-directory-label"><strong>Directorio actual:</strong> </div>    
+   </div>
+   
+    <div class="tab active" data-dir="mc1">maidcore 1.0</div>
+    <div class="tab" data-dir="mc2">maidcore 2.0</div>
+    <div class="tab" data-dir="mc3">maidcore 3.0</div>
+    <div class="tab" data-dir="mc4">maidcore 4.0</div>
+    
+    
+   <div class="divider">
+    <h2>Crear nuevo track</h2>
+    <form id="create-form">
+      <input type="text" name="title" placeholder="Título">
+      <input type="file" name="file" accept=".mp3" required>
+      <button type="submit">Subir</button>
+    </form>   
+   </div>
+  </header>
+
+  <table id="tracks-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Archivo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+
+<script>
+    let currentDirectory = 'ambient';
+    const header = document.querySelectorAll('.tab');
+    const tableBody = document.querySelector('#tracks-table tbody');
+    const dirLabel = document.getElementById('current-directory-label');
+    const createForm = document.getElementById('create-form')
+
+
+    header.forEach(tab => {
+      tab.addEventListener('click', () => {
+        header.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentDirectory = tab.dataset.dir;
+        dirLabel.innerHTML = '<strong>Directorio actual:</strong> ' + currentDirectory;
+        loadTracks();
+      });
+    });
+</script>
+</body>
+</html>

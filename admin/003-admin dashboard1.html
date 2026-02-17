@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard – FloMViDex</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f4f5fb;
+      color: #222;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+
+    .divider {
+      margin: 10px 0;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      border-radius: 4px;
+      background: #fff;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .tab.active {
+      background: #007bff;
+      color: #fff;
+      border-color: #007bff;
+    }
+
+    #current-directory-label {
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .filters {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 6px 8px;
+      font-size: 14px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    form input[type="text"],
+    form input[type="file"] {
+      padding: 6px 8px;
+      font-size: 14px;
+    }
+
+    form button {
+      width: fit-content;
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #007bff;
+      background: #007bff;
+      color: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    th {
+      background: #f5f5f5;
+    }
+
+    .actions button {
+      margin-right: 5px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 3px;
+      border: 1px solid #666;
+      background: #eee;
+    }
+
+    .no-data {
+      text-align: center;
+      color: #777;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <!-- Bloque título + tabs + filtros -->
+      <div class="divider" style="flex: 2 1 320px;">
+        <h1>Admin Dashboard para FloMViDex</h1>
+        <div id="current-directory-label">
+          <strong>Directorio actual:</strong> –
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" data-dir="mc1">maidcore 1.0</div>
+          <div class="tab" data-dir="mc2">maidcore 2.0</div>
+          <div class="tab" data-dir="mc3">maidcore 3.0</div>
+          <div class="tab" data-dir="mc4">maidcore 4.0</div>
+        </div>
+
+        <!-- Filtros / búsqueda -->
+        <div class="filters">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Buscar por título o archivo..."
+          >
+          <select id="extension-filter">
+            <option value="all">Todas las extensiones</option>
+            <option value="mp3">Solo .mp3</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bloque crear track -->
+      <div class="divider" style="flex: 1 1 260px;">
+        <h2>Crear nuevo track</h2>
+        <form id="create-form">
+          <input type="text" name="title" placeholder="Título del track" required>
+          <input type="file" name="file" accept=".mp3" required>
+          <button type="submit">Subir</button>
+        </form>
+      </div>
+    </header>
+
+    <!-- Tabla de tracks -->
+    <table id="tracks-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Archivo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // "Base de datos" simulada en memoria
+    const tracksByDirectory = {
+      mc1: [
+        { id: 1, title: 'Maidcore Intro', file: 'maidcore_intro.mp3' },
+        { id: 2, title: 'FloMViDex Theme', file: 'flomvidex_theme.mp3' }
+      ],
+      mc2: [
+        { id: 1, title: 'Maidcore 2.0 – Café', file: 'maidcore_cafe.mp3' }
+      ],
+      mc3: [],
+      mc4: []
+    };
+
+    let currentDirectory = 'mc1';
+    let nextIdByDirectory = {
+      mc1: 3,
+      mc2: 2,
+      mc3: 1,
+      mc4: 1
+    };
+
+    // Elementos del DOM
+    const tabs = document.querySelectorAll('.tab');
+    const tableBody = document.querySelector('#tracks-table tbody');
+    const dirLabel = document.getElementById('current-directory-label');
+    const createForm = document.getElementById('create-form');
+    const searchInput = document.getElementById('search-input');
+    const extensionFilter = document.getElementById('extension-filter');
+
+    // Cambiar de pestaña (directorio)
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentDirectory = tab.dataset.dir;
+        updateDirectoryLabel();
+        loadTracks();
+      });
+    });
+
+    function updateDirectoryLabel() {
+      dirLabel.innerHTML = '<strong>Directorio actual:</strong> ' + currentDirectory;
+    }
+
+    // Cargar tracks en la tabla según directorio + filtros
+    function loadTracks() {
+      tableBody.innerHTML = '';
+
+      const allTracks = tracksByDirectory[currentDirectory] || [];
+      const term = searchInput.value.trim().toLowerCase();
+      const extFilter = extensionFilter.value;
+
+      const filtered = allTracks.filter(track => {
+        const textMatch =
+          track.title.toLowerCase().includes(term) ||
+          track.file.toLowerCase().includes(term);
+
+        const hasExt = track.file.toLowerCase().split('.').pop();
+        const extMatch = extFilter === 'all' ? true : hasExt === extFilter;
+
+        return textMatch && extMatch;
+      });
+
+      if (filtered.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 4;
+        cell.textContent = 'No hay tracks en este directorio con el filtro actual.';
+        cell.className = 'no-data';
+        row.appendChild(cell);
+        tableBody.appendChild(row);
+        return;
+      }
+
+      filtered.forEach(track => {
+        const row = document.createElement('tr');
+
+        const idCell = document.createElement('td');
+        idCell.textContent = track.id;
+
+        const titleCell = document.createElement('td');
+        titleCell.textContent = track.title;
+
+        const fileCell = document.createElement('td');
+        fileCell.textContent = track.file;
+
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'actions';
+
+        const playBtn = document.createElement('button');
+        playBtn.textContent = 'Reproducir';
+        playBtn.addEventListener('click', () => {
+          alert('Aquí podrías integrar un reproductor para: ' + track.file);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Eliminar';
+        deleteBtn.addEventListener('click', () => {
+          deleteTrack(track.id);
+        });
+
+        actionsCell.appendChild(playBtn);
+        actionsCell.appendChild(deleteBtn);
+
+        row.appendChild(idCell);
+        row.appendChild(titleCell);
+        row.appendChild(fileCell);
+        row.appendChild(actionsCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Eliminar track por ID dentro del directorio actual
+    function deleteTrack(id) {
+      const tracks = tracksByDirectory[currentDirectory];
+      const index = tracks.findIndex(t => t.id === id);
+      if (index !== -1) {
+        tracks.splice(index, 1);
+        loadTracks();
+      }
+    }
+
+    // Crear nuevo track (simulado, no sube realmente el archivo)
+    createForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(createForm);
+      const title = formData.get('title') || 'Sin título';
+      const file = formData.get('file');
+      if (!file || !file.name) return;
+
+      const newTrack = {
+        id: nextIdByDirectory[currentDirectory]++,
+        title: title,
+        file: file.name
+      };
+
+      tracksByDirectory[currentDirectory].push(newTrack);
+      createForm.reset();
+      loadTracks();
+    });
+
+    // Filtros: búsqueda + extensión
+    searchInput.addEventListener('input', loadTracks);
+    extensionFilter.addEventListener('change', loadTracks);
+
+    // Inicializar
+    updateDirectoryLabel();
+    loadTracks();
+  </script>
+</body>
+</html>
+

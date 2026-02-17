@@ -5,327 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaidCore Player - Windows XP Style</title>
     <style>
-        /* RESET y estilos base */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Tahoma", "Arial", sans-serif;
-            font-size: 11px;
-        }
+      * {margin: 0; padding: 0; box-sizing: border-box; font-family: "Tahoma","Arial",sans-serif; font-size: 11px;}
+      body {background-color: #008080; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z4AE/jMQBxiJ00ZeK0aNQO4FRvK8Tp5O4mIw6gXiDEBuCwCw7QZTYZUwuAAAAABJRU5ErkJggg=='); height: 100vh; overflow: hidden;}
 
-        body {
-            background-color: #008080;
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z4AE/jMQBxiJ00ZeK0aNQO4FRvK8Tp5O4mIw6gXiDEBuCwCw7QZTYZUwuAAAAABJRU5ErkJggg==');
-            height: 100vh;
-            overflow: hidden;
-        }
+      .window {width: 700px; height: 500px; background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 4px 4px 10px rgba(0,0,0,0.5);}
+      .window-title {padding-left: 5px;}
+      .window-content {padding: 10px; height: calc(100% - 28px); overflow: auto;}
+      .window-controls {display: flex;}
 
-        /* VENTANA PRINCIPAL */
-        .window {
-            width: 700px;
-            height: 500px;
-            background-color: #c0c0c0;
-            border: 2px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
-        }
+      .title-bar {background: linear-gradient(90deg,#000080,#1084d0); color: white; padding: 4px; height: 28px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; font-size: 12px;}
 
-        /* BARRA DE TÍTULO */
-        .title-bar {
-            background: linear-gradient(90deg, #000080, #1084d0);
-            color: white;
-            padding: 4px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 12px;
-        }
 
-        .window-title {
-            padding-left: 5px;
-        }
+      .control-btn {width: 20px; height: 20px; margin-left: 2px; background-color: #c0c0c0; border: 1px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; cursor: pointer;}
 
-        .window-controls {
-            display: flex;
-        }
+      .control-btn:active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
 
-        .control-btn {
-            width: 20px;
-            height: 20px;
-            margin-left: 2px;
-            background-color: #c0c0c0;
-            border: 1px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 10px;
-            cursor: pointer;
-        }
 
-        .control-btn:active {
-            border-top-color: #808080;
-            border-left-color: #808080;
-            border-right-color: #ffffff;
-            border-bottom-color: #ffffff;
-        }
 
-        /* CONTENIDO */
-        .window-content {
-            padding: 10px;
-            height: calc(100% - 28px);
-            overflow: auto;
-        }
+      .player {background-color: #c0c0c0; border: 2px inset; padding: 15px; margin-bottom: 15px; height: 180px;}
+      .player-display {background-color: black; color: #00ff00; padding: 10px; margin-bottom: 15px; height: 60px; font-family: "Courier New", monospace; font-size: 12px; overflow: hidden; border: 1px inset;}
+      .player-controls {display: flex; justify-content: center; gap: 8px; margin-bottom: 15px;}
+      .player-btn {width: 70px; height: 25px; background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; cursor: pointer; font-size: 10px; font-weight: bold;}
+      .player-btn:active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
 
-        /* REPRODUCTOR */
-        .player {
-            background-color: #c0c0c0;
-            border: 2px inset;
-            padding: 15px;
-            margin-bottom: 15px;
-            height: 180px;
-        }
+      .playlist {background-color: white; border: 2px inset; height: 150px; overflow-y: auto; margin-top: 10px; padding: 5px;}
+      .playlist-item {padding: 3px 5px; cursor: pointer; border-bottom: 1px dotted #c0c0c0;}
+      .playlist-item:hover {background-color: #000080; color: white;}
+      .playlist-item.active {background-color: #000080; color: white; font-weight: bold;}
 
-        .player-display {
-            background-color: black;
-            color: #00ff00;
-            padding: 10px;
-            margin-bottom: 15px;
-            height: 60px;
-            font-family: "Courier New", monospace;
-            font-size: 12px;
-            overflow: hidden;
-            border: 1px inset;
-        }
+      .stats-panel {background-color: #c0c0c0; border: 2px inset; padding: 10px; margin-top: 10px;}
+      .stats-grid {display: grid; grid-template-columns: repeat(2,1fr); gap: 10px;}
+      .stat-box {background-color: white; border: 1px inset; padding: 8px; text-align: center;}
+      .stat-value {font-size: 14px; font-weight: bold; color: #000080; margin-top: 5px;}
 
-        .player-controls {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
+      .taskbar {position: fixed; bottom: 0; left: 0; width: 100%; height: 40px; background-color: #c0c0c0; border-top: 2px solid #fff; display: flex; align-items: center; padding: 0 5px;}
+      .taskbar-items {display: flex; gap: 5px; flex-grow: 1;}
+      .taskbar-item {background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; padding: 5px 10px; min-width: 120px; cursor: pointer; font-size: 10px;}
+      .taskbar-item.active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
 
-        .player-btn {
-            width: 70px;
-            height: 25px;
-            background-color: #c0c0c0;
-            border: 2px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: bold;
-        }
+      .start-btn {width: 80px; height: 30px; background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; display: flex; align-items: center; padding: 0 8px; font-weight: bold; font-size: 12px; cursor: pointer; margin-right: 10px;}
+      .start-btn:active {border-top-color: #808080; border-left-color: #808080; border-right-color: #fff; border-bottom-color: #fff;}
+      .start-icon {background-color: #008080; color: white; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; margin-right: 5px; font-weight: bold;}
 
-        .player-btn:active {
-            border-top-color: #808080;
-            border-left-color: #808080;
-            border-right-color: #ffffff;
-            border-bottom-color: #ffffff;
-        }
 
-        .playlist {
-            background-color: white;
-            border: 2px inset;
-            height: 150px;
-            overflow-y: auto;
-            margin-top: 10px;
-            padding: 5px;
-        }
+      .clock {background-color: #c0c0c0; border: 2px inset; padding: 5px 10px; font-size: 11px; min-width: 100px; text-align: center; margin-left: 10px;}
 
-        .playlist-item {
-            padding: 3px 5px;
-            cursor: pointer;
-            border-bottom: 1px dotted #c0c0c0;
-        }
+      ::-webkit-scrollbar {width: 16px;}
+      ::-webkit-scrollbar-track {background-color: #c0c0c0; border: 1px inset;}
+      ::-webkit-scrollbar-thumb {background-color: #c0c0c0; border: 2px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080;}
+      ::-webkit-scrollbar-button {background-color: #c0c0c0; border: 1px solid; border-top-color: #fff; border-left-color: #fff; border-right-color: #808080; border-bottom-color: #808080; height: 16px;}
 
-        .playlist-item:hover {
-            background-color: #000080;
-            color: white;
-        }
-
-        .playlist-item.active {
-            background-color: #000080;
-            color: white;
-            font-weight: bold;
-        }
-
-        /* PANEL DE ESTADÍSTICAS */
-        .stats-panel {
-            background-color: #c0c0c0;
-            border: 2px inset;
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .stat-box {
-            background-color: white;
-            border: 1px inset;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 14px;
-            font-weight: bold;
-            color: #000080;
-            margin-top: 5px;
-        }
-
-        /* TASKBAR (BARRA DE WINDOWS) */
-        .taskbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            background-color: #c0c0c0;
-            border-top: 2px solid #ffffff;
-            display: flex;
-            align-items: center;
-            padding: 0 5px;
-        }
-
-        .start-btn {
-            width: 80px;
-            height: 30px;
-            background-color: #c0c0c0;
-            border: 2px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            display: flex;
-            align-items: center;
-            padding: 0 8px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-
-        .start-btn:active {
-            border-top-color: #808080;
-            border-left-color: #808080;
-            border-right-color: #ffffff;
-            border-bottom-color: #ffffff;
-        }
-
-        .start-icon {
-            background-color: #008080;
-            color: white;
-            width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 5px;
-            font-weight: bold;
-        }
-
-        .taskbar-items {
-            display: flex;
-            gap: 5px;
-            flex-grow: 1;
-        }
-
-        .taskbar-item {
-            background-color: #c0c0c0;
-            border: 2px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            padding: 5px 10px;
-            min-width: 120px;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        .taskbar-item.active {
-            border-top-color: #808080;
-            border-left-color: #808080;
-            border-right-color: #ffffff;
-            border-bottom-color: #ffffff;
-        }
-
-        .clock {
-            background-color: #c0c0c0;
-            border: 2px inset;
-            padding: 5px 10px;
-            font-size: 11px;
-            min-width: 100px;
-            text-align: center;
-            margin-left: 10px;
-        }
-
-        /* SCROLLBAR ESTILO XP */
-        ::-webkit-scrollbar {
-            width: 16px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #c0c0c0;
-            border: 1px inset;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #c0c0c0;
-            border: 2px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-        }
-
-        ::-webkit-scrollbar-button {
-            background-color: #c0c0c0;
-            border: 1px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            height: 16px;
-        }
-
-        /* UTILITIES */
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-10 {
-            margin-top: 10px;
-        }
-
-        .bold {
-            font-weight: bold;
-        }
-
-        .blue {
-            color: #000080;
-        }
+      .text-center {text-align: center;}
+      .mt-10 {margin-top: 10px;}
+      .bold {font-weight: bold;}
+      .blue {color: #000080;}
     </style>
 </head>
 <body>
@@ -411,10 +144,10 @@
                 MaidCore Player
             </div>
             <div class="taskbar-item" onclick="openExplorer()">
-                🗀 Explorer
+                🗀 Song of the Week
             </div>
             <div class="taskbar-item" onclick="openBrowser()">
-                🌐 Internet
+                <> Paint
             </div>
         </div>
         
