@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard – FloMViDex</title>
+  <style>
+body {font-family: Arial, sans-serif; margin:20px; background:linear-gradient(135deg,#fff,#ffb3d133); color:#222;}
+header {display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px; margin-bottom:20px; align-items:flex-start;padding-bottom:10px;}
+h1,h2 {color:#0f8b8d;}
+
+.tabs {display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+.tab {padding:8px 12px; border-radius:6px; cursor:pointer;  background:#fff; color:#0f8b8d; border:2px solid #3fe0d0; transition:.2s;}
+.tab:hover {background:#3fe0d0; color:#fff;}
+.tab.active {background:linear-gradient(135deg,#3fe0d0,#0f8b8d); font-weight:bold; box-shadow:0 0 10px #3fe0d0aa;}
+
+#current-directory-label {margin-top:4px; font-size:14px; color:#0f8b8d; }
+.filters {margin-top:8px; display:flex; flex-wrap:wrap; gap:8px;}
+.filters input, .filters select {padding:6px 8px; font-size:14px; border-radius:6px; border:1px solid #0f8b8d55; color:#0f8b8d;}
+
+form {display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+form input[type=text], form input[type=file] {padding:6px 8px; border-radius:6px; border:1px solid #0f8b8d55;}
+form button {padding:6px 12px; font-size:14px; cursor:pointer; border-radius:8px;  border:2px solid #ffd86b;
+  background:linear-gradient(135deg,#ffd86b,#ffb3d1);  font-weight:bold; color:#222; transition:.2s;}
+form button:hover {background:linear-gradient(135deg,#ffb3d1,#ffd86b); }
+
+table {width:100%; border-collapse:collapse; margin-top:10px;  background:#fff8; border-radius:10px; overflow:hidden;box-shadow:0 8px 20px #0f8b8d22;animation:wave 8s linear infinite;}
+
+@keyframes wave {{  from {{ background-position:0 0; }}  to {{ background-position:400px 0; }}}}
+
+th,td{border:1px solid #0f8b8d33; padding:8px; font-size:14px;}
+th {background:#3fe0d033;color:#0f8b8d;font-weight:bold;}
+
+.actions button {margin-right:5px; padding:4px 8px; font-size:12px;  border-radius:5px; cursor:pointer; border:none; color:#fff;  background:#3fe0d0; transition:.2s;}
+.actions button:hover {background:#0f8b8d;}
+
+.no-data {text-align:center; color:#ff5fa2; font-style:italic;}
+
+#player-info {font-size:13px; color:#0f8b8d; margin-bottom:6px;}
+#header-player {width:100%;border:3px solid #ffd86b; border-radius:12px;animation:led 2.2s infinite ease-in-out;}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <!-- Divider 1: Texto + tabs + filtros -->
+      <div class="divider" style="flex: 2 1 320px;">
+        <h1>Admin Dashboard para FloMViDex</h1>
+        <div id="current-directory-label">
+          <h3>Directorio actual:</h3>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" data-dir="mc1">maidcore 1.0</div>
+          <div class="tab" data-dir="mc2">maidcore 2.0</div>
+          <div class="tab" data-dir="mc3">maidcore 3.0</div>
+          <div class="tab" data-dir="mc4">maidcore 4.0</div>
+        </div>
+
+        <!-- Filtros / búsqueda -->
+        <div class="filters">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Buscar por título o archivo..."
+          >
+          <select id="extension-filter">
+            <option value="all">Todas las extensiones</option>
+            <option value="mp3">Solo .mp3</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Divider 2: Reproductor básico -->
+      <div class="divider" style="flex: 1 1 260px;">
+        <h2>Reproductor básico</h2>
+        <div id="player-info">Ningún track seleccionado</div>
+        <audio id="header-player" controls>
+          Tu navegador no soporta el elemento de audio.
+        </audio>
+      </div>
+
+      <!-- Divider 3: Creación de tracks -->
+      <div class="divider" style="flex: 1 1 260px;">
+        <h2>Crear nuevo track</h2>
+        <form id="create-form">
+          <input type="text" name="title" placeholder="Título base del track (opcional)">
+          <!-- multiple = creación múltiple de mp3 -->
+          <input type="file" name="file" accept=".mp3" multiple required>
+          <button type="submit">Subir</button>
+        </form>
+      </div>
+    </header>
+
+    <!-- Tabla de tracks -->
+    <table id="tracks-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Archivo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // "Base de datos" simulada en memoria
+    const tracksByDirectory = {
+      mc1: [
+        { id: 1, title: 'Maidcore Intro', file: 'maidcore_intro.mp3' },
+        { id: 2, title: 'FloMViDex Theme', file: 'flomvidex_theme.mp3' }
+      ],
+      mc2: [
+        { id: 1, title: 'Maidcore 2.0 – Café', file: 'maidcore_cafe.mp3' }
+      ],
+      mc3: [],
+      mc4: []
+    };
+
+    let currentDirectory = 'mc1';
+    let nextIdByDirectory = {
+      mc1: 3,
+      mc2: 2,
+      mc3: 1,
+      mc4: 1
+    };
+
+    // Elementos del DOM
+    const tabs = document.querySelectorAll('.tab');
+    const tableBody = document.querySelector('#tracks-table tbody');
+    const dirLabel = document.getElementById('current-directory-label');
+    const createForm = document.getElementById('create-form');
+    const searchInput = document.getElementById('search-input');
+    const extensionFilter = document.getElementById('extension-filter');
+
+    const headerPlayer = document.getElementById('header-player');
+    const playerInfo = document.getElementById('player-info');
+
+    // Cambiar de pestaña (directorio)
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentDirectory = tab.dataset.dir;
+        updateDirectoryLabel();
+        loadTracks();
+      });
+    });
+
+    function updateDirectoryLabel() {
+      dirLabel.innerHTML = '<h3>Directorio actual:</h3> '+currentDirectory;
+    }
+
+    // Cargar tracks en la tabla según directorio + filtros
+    function loadTracks() {
+      tableBody.innerHTML = '';
+
+      const allTracks = tracksByDirectory[currentDirectory] || [];
+      const term = searchInput.value.trim().toLowerCase();
+      const extFilter = extensionFilter.value;
+
+      const filtered = allTracks.filter(track => {
+        const textMatch =
+          track.title.toLowerCase().includes(term) ||
+          track.file.toLowerCase().includes(term);
+
+        const hasExt = track.file.toLowerCase().split('.').pop();
+        const extMatch = extFilter === 'all' ? true : hasExt === extFilter;
+
+        return textMatch && extMatch;
+      });
+
+      if (filtered.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 4;
+        cell.textContent = 'No hay tracks en este directorio con el filtro actual.';
+        cell.className = 'no-data';
+        row.appendChild(cell);
+        tableBody.appendChild(row);
+        return;
+      }
+
+      filtered.forEach(track => {
+        const row = document.createElement('tr');
+
+        const idCell = document.createElement('td');
+        idCell.textContent = track.id;
+
+        const titleCell = document.createElement('td');
+        titleCell.textContent = track.title;
+
+        const fileCell = document.createElement('td');
+        fileCell.textContent = track.file;
+
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'actions';
+
+        const playBtn = document.createElement('button');
+        playBtn.textContent = 'Reproducir';
+        playBtn.addEventListener('click', () => {
+          playInHeader(track);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Eliminar';
+        deleteBtn.addEventListener('click', () => {
+          deleteTrack(track.id);
+        });
+
+        actionsCell.appendChild(playBtn);
+        actionsCell.appendChild(deleteBtn);
+
+        row.appendChild(idCell);
+        row.appendChild(titleCell);
+        row.appendChild(fileCell);
+        row.appendChild(actionsCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Reproducir track en el reproductor del header
+    function playInHeader(track) {
+      // Aquí deberías ajustar la ruta real donde sirves los mp3
+      // Por ejemplo: const src = '/audio/' + currentDirectory + '/' + track.file;
+      const src = track.file; // Placeholder
+
+      headerPlayer.src = src;
+      headerPlayer.play().catch(() => {});
+      playerInfo.textContent = track.title + ' – ' + track.file;
+    }
+
+    // Eliminar track por ID dentro del directorio actual
+    function deleteTrack(id) {
+      const tracks = tracksByDirectory[currentDirectory];
+      const index = tracks.findIndex(t => t.id === id);
+      if (index !== -1) {
+        tracks.splice(index, 1);
+        loadTracks();
+      }
+    }
+
+    // Crear nuevos tracks (múltiples archivos)
+    createForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(createForm);
+      const titleBase = (formData.get('title') || '').trim();
+      const files = formData.getAll('file');
+
+      if (!files || files.length === 0) return;
+
+      files.forEach((file, index) => {
+        if (!file || !file.name) return;
+
+        const title =
+          titleBase !== ''
+            ? (files.length > 1 ? `${titleBase} (${index + 1})` : titleBase)
+            : file.name;
+
+        const newTrack = {
+          id: nextIdByDirectory[currentDirectory]++,
+          title: title,
+          file: file.name
+        };
+
+        tracksByDirectory[currentDirectory].push(newTrack);
+      });
+
+      createForm.reset();
+      loadTracks();
+    });
+
+    // Filtros: búsqueda + extensión
+    searchInput.addEventListener('input', loadTracks);
+    extensionFilter.addEventListener('change', loadTracks);
+
+    // Inicializar
+    updateDirectoryLabel();
+    loadTracks();
+  </script>
+</body>
+</html>
